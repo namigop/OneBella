@@ -1,0 +1,16 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- x:Shared is not yet supported in Avalonia
+        <Viewbox x:Key="btnReset" Width="16" Height="16"> -->
+    <!--     <Canvas Width="24" Height="24"> -->
+    <!--          <Path Fill="White" -->
+    <!--               Data="M20 16L14.5 21.5L13.08 20.09L16.17 17H10.5C6.91 17 4 14.09 4 10.5S6.91 4 10.5 4H18V6H10.5C8 6 6 8 6 10.5S8 15 10.5 15H16.17L13.09 11.91L14.5 10.5L20 16Z" /> -->
+    <!--     </Canvas> -->
+    <!-- </Viewbox> -->
+
+    <SolidColorBrush x:Key="LdbTextColor" Color="#CFDCEC"></SolidColorBrush>
+    <SolidColorBrush x:Key="LdbWindowBackground" Color="#26282A" />
+    <SolidColorBrush x:Key="LdbControlBackground" Color="#1C1D1F"></SolidColorBrush>
+</ResourceDictionary>

@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LiteDb.Studio.Avalonia.ViewModels"
+             xmlns:view="using:LiteDb.Studio.Avalonia.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LiteDb.Studio.Avalonia.Views.ScriptControl">
+    <Design.DataContext>
+        <vm:ScriptViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="*, 5, 2*">
+        <Grid Grid.Row="0">
+            <view:SqlTextEditor Text="{Binding Query}">
+
+            </view:SqlTextEditor>
+        </Grid>
+        <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
+        <Grid Grid.Row="2">
+            <TabControl Grid.Row="2" Grid.Column="2" Background="#1C1D1F">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel>
+                            <!-- <Button Background="Transparent" Content="x" VerticalAlignment="Center" -->
+                            <!--         ToolTip.Tip="Close this tab" -->
+                            <!--         Margin="5 0 -5 0" -->
+                            <!--         Foreground="DarkGray" -->
+                            <!--         Padding="5 5 5 5" -->
+                            <!--         Command="{Binding CloseCommand}" -->
+                            <!--         DockPanel.Dock="Right" /> -->
+
+                            <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabItem Header="Grid">
+                    <TreeDataGrid Source="{Binding Source}">
+                        <TreeDataGrid.Resources>
+                            <vm:ValueTemplateSelector x:Key="BsonItemValueSelector">
+                                <DataTemplate x:Key="Json" x:DataType="vm:BsonItem">
+                                    <view:JsonTextEditor Text="{Binding Value}"></view:JsonTextEditor>
+                                </DataTemplate>
+                                <DataTemplate x:Key="Others" x:DataType="vm:BsonItem">
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Value}"></TextBlock>
+                                </DataTemplate>
+                            </vm:ValueTemplateSelector>
+                            <vm:ValueTemplateSelector x:Key="BsonItemNameSelector">
+                                <DataTemplate x:Key="Doc" x:DataType="vm:BsonItem">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Viewbox Height="14" Width="14">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="#826293"
+                                                      Data="M5,3H7V5H5V10A2,2 0 0,1 3,12A2,2 0 0,1 5,14V19H7V21H5C3.93,20.73 3,20.1 3,19V15A2,2 0 0,0 1,13H0V11H1A2,2 0 0,0 3,9V5A2,2 0 0,1 5,3M19,3A2,2 0 0,1 21,5V9A2,2 0 0,0 23,11H24V13H23A2,2 0 0,0 21,15V19A2,2 0 0,1 19,21H17V19H19V14A2,2 0 0,1 21,12A2,2 0 0,1 19,10V5H17V3H19M12,15A1,1 0 0,1 13,16A1,1 0 0,1 12,17A1,1 0 0,1 11,16A1,1 0 0,1 12,15M8,15A1,1 0 0,1 9,16A1,1 0 0,1 8,17A1,1 0 0,1 7,16A1,1 0 0,1 8,15M16,15A1,1 0 0,1 17,16A1,1 0 0,1 16,17A1,1 0 0,1 15,16A1,1 0 0,1 16,15Z" />
+                                            </Canvas>
+                                        </Viewbox>
+                                        <TextBlock Margin="5 0 5 0" VerticalAlignment="Center" Text="{Binding Name}"></TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <DataTemplate x:Key="Others" x:DataType="vm:BsonItem">
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Name}"></TextBlock>
+                                </DataTemplate>
+                            </vm:ValueTemplateSelector>
+                        </TreeDataGrid.Resources>
+                        <TreeDataGrid.Styles>
+                            <Style Selector="TreeDataGrid TreeDataGridRow:nth-child(2n)">
+                                <Setter Property="Background" Value="#232426" />
+                            </Style>
+                        </TreeDataGrid.Styles>
+                    </TreeDataGrid>
+
+                </TabItem>
+                <TabItem Header="Text">
+                    <view:JsonTextEditor Text="{Binding QueryResultJson}">
+
+                    </view:JsonTextEditor>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</UserControl>

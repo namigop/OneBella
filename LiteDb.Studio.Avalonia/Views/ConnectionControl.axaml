@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+
+             x:Class="LiteDb.Studio.Avalonia.Views.ConnectionControl">
+
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Classes="H1" Text="connection mode" Margin="0 0 0 10"></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton GroupName="ABC" Content="direct" IsChecked="True" Margin="5"></RadioButton>
+                        <RadioButton GroupName="ABC" Content="shared" IsChecked="False" Margin="5"></RadioButton>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+            <Grid Margin="0 20 0 0">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="parameters" Classes="H1" Margin="0 0 0 10"></TextBlock>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto, Auto, Auto,Auto,Auto, Auto">
+                        <Grid.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource LdbTextColor}"></Setter>
+                                <Setter Property="Margin" Value="5"></Setter>
+                                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            </Style>
+                            <Style Selector="TextBox">
+                                <Setter Property="Foreground" Value="{StaticResource LdbTextColor}"></Setter>
+                                <Setter Property="Margin" Value="5"></Setter>
+                            </Style>
+                            <Style Selector="CheckBox">
+                                <Setter Property="Foreground" Value="{StaticResource LdbTextColor}"></Setter>
+                                <Setter Property="Margin" Value="5"></Setter>
+                            </Style>
+                        </Grid.Styles>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="database file"></TextBlock>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="password"></TextBlock>
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="initial size (MB)"></TextBlock>
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="collation"></TextBlock>
+                        <CheckBox Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Content="read only"></CheckBox>
+                        <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" Content="upgrade from LiteDB v4 (if needed)"></CheckBox>
+
+                        <DockPanel Grid.Column="1" Grid.Row="0">
+                            <Button DockPanel.Dock="Right"  Content="..." Click="SelectDbFileCLick" Margin="5 0 0 0"></Button>
+                            <TextBox Text=""></TextBox>
+                        </DockPanel>
+                        <TextBox Grid.Column="1" Grid.Row="1" Text="" Margin="5"></TextBox>
+                        <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5"></NumericUpDown>
+                        <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="5">
+                            <ComboBox MinWidth="80"></ComboBox>
+                            <TextBlock Text="/" Margin="5"></TextBlock>
+                            <ComboBox MinWidth="80"></ComboBox>
+                        </StackPanel>
+
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Border Height="1" Background="{StaticResource LdbControlBackground}" HorizontalAlignment="Stretch" Margin="0 20 0 0 "></Border>
+
+            <Grid Margin="0 0 0 0 ">
+                <Button  Content="connect" HorizontalAlignment="Right" Margin="5 15 5 5"></Button>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>
