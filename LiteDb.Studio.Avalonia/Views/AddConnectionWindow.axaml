@@ -14,7 +14,7 @@
 
         Title="Connect to a database">
     <Grid>
-        <view:ConnectionControl Margin="10 40 10 10"></view:ConnectionControl>
+        <view:ConnectionControl Margin="10 40 10 10" x:Name="ConnectionControl"></view:ConnectionControl>
     </Grid>
 
 </Window>

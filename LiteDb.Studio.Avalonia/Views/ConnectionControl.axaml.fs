@@ -15,18 +15,20 @@ type ConnectionControl() as this =
     do this.DataContext <- vm
 
     member x.VieModel = vm
+
+
     member private this.SelectDbFileCLick(send: obj, args: RoutedEventArgs) =
-       let test() =
+       let run() =
             async {
                 match Application.Current.ApplicationLifetime with
                 | :? IClassicDesktopStyleApplicationLifetime as desktop ->
                     let dg = OpenFileDialog()
                     dg.AllowMultiple <- false
                     dg.Title = "select the liteDb file"
-                    let! files = dg.ShowAsync(desktop.MainWindow) |> Async.AwaitTask
-                    ()
+                    let w = this.Parent.Parent :?> Window
+                    let! files = dg.ShowAsync(w) |> Async.AwaitTask
+                    this.VieModel.Set(files)
                 | _ -> ()
             }
 
-       test() |> Async.StartImmediateAsTask |> ignore
-       ()
+       run() |> Async.StartImmediateAsTask |> ignore

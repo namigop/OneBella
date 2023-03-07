@@ -3,8 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-
+             xmlns:vm="using:LiteDb.Studio.Avalonia.ViewModels"
              x:Class="LiteDb.Studio.Avalonia.Views.ConnectionControl">
+    <Design.DataContext>
+        <vm:ConnectionViewModel />
+    </Design.DataContext>
 
     <Grid>
         <StackPanel Orientation="Vertical">
@@ -12,8 +15,8 @@
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="H1" Text="connection mode" Margin="0 0 0 10"></TextBlock>
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton GroupName="ABC" Content="direct" IsChecked="True" Margin="5"></RadioButton>
-                        <RadioButton GroupName="ABC" Content="shared" IsChecked="False" Margin="5"></RadioButton>
+                        <RadioButton GroupName="ABC" Content="direct" IsChecked="{Binding IsDirect}" Margin="5"></RadioButton>
+                        <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding IsShared}" Margin="5"></RadioButton>
                     </StackPanel>
                 </StackPanel>
             </Grid>
@@ -47,10 +50,10 @@
 
                         <DockPanel Grid.Column="1" Grid.Row="0">
                             <Button DockPanel.Dock="Right"  Content="..." Click="SelectDbFileCLick" Margin="5 0 0 0"></Button>
-                            <TextBox Text=""></TextBox>
+                            <TextBox Text="{Binding DbFile}"></TextBox>
                         </DockPanel>
-                        <TextBox Grid.Column="1" Grid.Row="1" Text="" Margin="5"></TextBox>
-                        <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5"></NumericUpDown>
+                        <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding Password}" PasswordChar="*" Margin="5"></TextBox>
+                        <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5" Value="{Binding InitSizeInMB}"></NumericUpDown>
                         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="5">
                             <ComboBox MinWidth="80"></ComboBox>
                             <TextBlock Text="/" Margin="5"></TextBlock>
@@ -64,7 +67,7 @@
             <Border Height="1" Background="{StaticResource LdbControlBackground}" HorizontalAlignment="Stretch" Margin="0 20 0 0 "></Border>
 
             <Grid Margin="0 0 0 0 ">
-                <Button  Content="connect" HorizontalAlignment="Right" Margin="5 15 5 5"></Button>
+                <Button  Content="connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 5 5"></Button>
             </Grid>
         </StackPanel>
     </Grid>

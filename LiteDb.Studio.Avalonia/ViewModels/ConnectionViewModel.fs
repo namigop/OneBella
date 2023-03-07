@@ -4,10 +4,10 @@ open System.Threading.Tasks
 open LiteDb.Studio.Avalonia.Models
 open ReactiveUI
 
-type ConnectionViewModel() =
+type ConnectionViewModel() as this=
     inherit ViewModelBase()
 
-    let ts = new TaskCompletionSource<string>()
+    let ts = new TaskCompletionSource<ConnectionParameters>()
     let mutable dbFile = ""
     let mutable password = ""
     let mutable isDirect = true
@@ -16,6 +16,18 @@ type ConnectionViewModel() =
     let mutable isReadOnly = false
     let mutable isUpgradingFromV4 = false
 
+    let mutable closeFunc = fun () -> ()
+    let connectCommand =
+        let run () =
+            ts.SetResult(this.GetParameters())
+            closeFunc()
+
+        ReactiveCommand.Create(run)
+
+
+    member x.Close
+        with set (v: unit -> unit) = closeFunc <-v
+    member x.ConnectCommand with get() = connectCommand
     member x.DbFile
         with get () = dbFile
         and set v = x.RaiseAndSetIfChanged(&dbFile, v) |> ignore
@@ -44,6 +56,12 @@ type ConnectionViewModel() =
         with get () = isUpgradingFromV4
         and set v = x.RaiseAndSetIfChanged(&isUpgradingFromV4, v) |> ignore
 
+    member x.SelectFileTask = ts.Task
+
+    member x.Set(result:string[]) =
+        if (result.Length > 0) then
+            x.DbFile <- result[0]
+
     member x.GetParameters() : ConnectionParameters =
         {
           DbFile = x.DbFile
@@ -54,5 +72,3 @@ type ConnectionViewModel() =
           IsReadOnly = x.IsReadOnly
           IsUpgradingFromV4 = x.IsUpgradingFromV4
         }
-
-        ts.
