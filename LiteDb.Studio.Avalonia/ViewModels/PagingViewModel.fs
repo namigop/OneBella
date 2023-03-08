@@ -1,0 +1,110 @@
+namespace LiteDb.Studio.Avalonia.ViewModels
+
+open System
+open System.Collections.Generic
+open System.Collections.ObjectModel
+open System.IO
+open System.Threading
+open System.Threading.Tasks
+open Avalonia.Controls
+open Avalonia.Controls.Models.TreeDataGrid
+open LiteDB
+open LiteDb.Studio.Avalonia.Models.DbUtils
+open Microsoft.FSharp.Control
+open ReactiveUI
+
+type PagingViewModel(source: ObservableCollection<BsonItem>) =
+    inherit ViewModelBase()
+
+    let mutable elapsed = TimeSpan.FromSeconds(0)
+    let mutable tempSource = source
+    let pages = Dictionary<int, (int*int)>()
+    let displaySource =
+        let temp = ObservableCollection<BsonItem>()
+        temp.CollectionChanged |> Observable.add (fun ds -> Console.WriteLine(ds.Action))
+        temp
+    let mutable pageSize = 50
+    let mutable currentPage =0
+
+    let showPage pageNumber =
+        if (pages.ContainsKey pageNumber) then
+            displaySource.Clear()
+            let (pageStart,pageEnd) = pages[pageNumber]
+            for i in pageStart..pageEnd do
+               displaySource.Add (tempSource.[i])
+
+    let startPageCommand =
+        let run () =
+            currentPage <- 0
+            showPage currentPage
+        ReactiveCommand.Create(run)
+
+    let nextPageCommand =
+        let run () =
+            if (pages.ContainsKey (currentPage + 1)) then
+                currentPage <- currentPage + 1
+                showPage currentPage
+        ReactiveCommand.Create(run)
+
+    let backPageCommand =
+        let run () =
+            if (pages.ContainsKey (currentPage - 1)) then
+                currentPage <- currentPage - 1
+                showPage currentPage
+        ReactiveCommand.Create(run)
+
+    let endPageCommand =
+        let run () =
+            currentPage <- pages.Keys |> Seq.max
+            showPage currentPage
+
+        ReactiveCommand.Create(run)
+
+    let getPages (pageSize:int) (total:int) =
+        let p = Dictionary<int, (int*int)>()
+        if (pageSize > total) then
+            p[0] <- (0, total-1)
+        else
+            let maxPageCount = (total / pageSize) + 1
+            for i in 0..(maxPageCount-1) do
+                let pageStart = i * pageSize
+                if (pageStart < total) then
+                    let pageEnd = pageStart + pageSize - 1
+                    p[i] <- (pageStart, if (pageEnd < total-1) then pageEnd else total-1)
+        p
+
+    let trySplitUp() =
+            if source.Count = 1 && source[0].Type = "document" then
+               //if the result of the query is a single key with an array, we'll flatten it
+               //  - this is the case for SELECT statements
+               if (Seq.length source[0].Children) = 1 then
+                    let docs = source[0].Children |> Seq.head |> (fun f -> f.Children)
+                    tempSource.Clear()
+                    for d in docs do
+                        tempSource.Add d
+
+
+
+
+    member x.DisplaySource = displaySource
+    member x.EndPageCommand = endPageCommand
+    member x.StartPageCommand = startPageCommand
+    member x.BackPageCommand = backPageCommand
+    member x.NextPageCommand = nextPageCommand
+    member x.PageSize
+        with get () = pageSize
+        and set v = x.RaiseAndSetIfChanged(&pageSize, v) |> ignore
+    member x.ElapsedTime
+        with get() = "elapsed: " + elapsed.ToString("mm\:ss\.ff")
+
+    member x.CalculatePages(elapsed2:TimeSpan) =
+        elapsed <- elapsed2
+        pages.Clear()
+        tempSource <- source
+
+        x.RaisePropertyChanged(nameof x.ElapsedTime)
+        trySplitUp()
+        if (tempSource.Count > 0) then
+            for kvp in getPages x.PageSize tempSource.Count do
+                pages[kvp.Key] <- kvp.Value
+            showPage 0

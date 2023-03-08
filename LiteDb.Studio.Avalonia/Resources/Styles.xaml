@@ -6,7 +6,8 @@
     </Style>
     <Style Selector="TextBlock.H1">
         <Setter Property="Foreground" Value="#CFDCEC" />
-        <Setter Property="FontSize" Value="20"></Setter>
+        <Setter Property="FontWeight" Value="Bold"></Setter>
+        <!-- <Setter Property="FontSize" Value="20"></Setter> -->
     </Style>
     <Style Selector="TextBox">
         <Setter Property="Foreground" Value="#CFDCEC" />

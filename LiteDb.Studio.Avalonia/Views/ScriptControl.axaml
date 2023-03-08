@@ -17,18 +17,10 @@
         </Grid>
         <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
         <Grid Grid.Row="2">
-            <TabControl Grid.Row="2" Grid.Column="2" Background="#1C1D1F">
+            <TabControl Grid.Row="2" Grid.Column="2" Background="#1C1D1F" SelectedIndex="{Binding ResultDisplayTabIndex}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <DockPanel>
-                            <!-- <Button Background="Transparent" Content="x" VerticalAlignment="Center" -->
-                            <!--         ToolTip.Tip="Close this tab" -->
-                            <!--         Margin="5 0 -5 0" -->
-                            <!--         Foreground="DarkGray" -->
-                            <!--         Padding="5 5 5 5" -->
-                            <!--         Command="{Binding CloseCommand}" -->
-                            <!--         DockPanel.Dock="Right" /> -->
-
                             <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
                         </DockPanel>
                     </DataTemplate>
@@ -75,6 +67,63 @@
                     </view:JsonTextEditor>
                 </TabItem>
             </TabControl>
+
+            <!-- paging controls -->
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5 10 10 5" ColumnDefinitions="Auto, *" IsVisible="{Binding CanShowPaging}">
+
+                <ProgressBar Grid.Column="0" IsVisible="{Binding IsBusy}" IsIndeterminate="True" MaxWidth="40" Height="10"></ProgressBar>
+                <TextBlock Grid.Column="0" Text="{Binding Paging.ElapsedTime}" IsVisible="{Binding !IsBusy}" Foreground="DarkGray" FontSize="13"
+                           Margin="0 0 5 0" VerticalAlignment="Center">
+                </TextBlock>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                    <StackPanel.Styles>
+                        <Style Selector="Button">
+                            <Setter Property="Margin" Value="5 0 0 0"></Setter>
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                        </Style>
+                        <Style Selector="Path">
+                            <Setter Property="Fill" Value="{StaticResource LdbTextColor}"></Setter>
+                        </Style>
+                    </StackPanel.Styles>
+
+                    <Button ToolTip.Tip="Start" Command="{Binding Paging.StartPageCommand}">
+                        <Viewbox Width="24" Height="24">
+                            <Canvas
+                                Width="24" Height="24">
+                                <Path Data="M18.41,7.41L17,6L11,12L17,18L18.41,16.59L13.83,12L18.41,7.41M12.41,7.41L11,6L5,12L11,18L12.41,16.59L7.83,12L12.41,7.41Z" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button ToolTip.Tip="Back" Command="{Binding Paging.BackPageCommand}">
+                        <Viewbox Width="24" Height="24">
+                            <Canvas
+                                Width="24" Height="24">
+                                <Path  Data="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <NumericUpDown Text="50" MinWidth="40" Value="{Binding Paging.PageSize}" Minimum="10" Maximum="100000"
+                                   AllowSpin="True" Increment="50" ShowButtonSpinner="False"
+                                   Width="80" Margin="5 0 0 0">
+                    </NumericUpDown>
+                    <Button ToolTip.Tip="Next" Command="{Binding Paging.NextPageCommand}">
+                        <Viewbox Width="24" Height="24">
+                            <Canvas Width="24" Height="24">
+                                <Path   Data="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button ToolTip.Tip="End" Command="{Binding Paging.EndPageCommand}">
+                        <Viewbox Width="24" Height="24">
+                            <Canvas
+                                Width="24" Height="24">
+                                <Path  Data="M5.59,7.41L7,6L13,12L7,18L5.59,16.59L10.17,12L5.59,7.41M11.59,7.41L13,6L19,12L13,18L11.59,16.59L16.17,12L11.59,7.41Z" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

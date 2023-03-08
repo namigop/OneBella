@@ -8,7 +8,8 @@ type ConnectionParameters =
         Password :string
         IsDirect :bool
         IsShared :bool
-        InitSizeInMB : int
+        InitSizeInMB : int64
         IsReadOnly : bool
         IsUpgradingFromV4 : bool
+        Collation :string
     }

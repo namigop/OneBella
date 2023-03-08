@@ -9,11 +9,12 @@
         <vm:ConnectionViewModel />
     </Design.DataContext>
 
-    <Grid>
-        <StackPanel Orientation="Vertical">
+    <Grid Margin="0 30 0 0" RowDefinitions="*, Auto, Auto">
+        <StackPanel Orientation="Vertical" Grid.Row="0" Margin="30 0 30 0">
+            <TextBlock Text="Connect to database" FontSize="20" HorizontalAlignment="Center" ></TextBlock>
             <Grid>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Classes="H1" Text="connection mode" Margin="0 0 0 10"></TextBlock>
+                    <TextBlock Classes="H1" Text="connection mode" Margin="0 10 0 10"></TextBlock>
                     <StackPanel Orientation="Horizontal">
                         <RadioButton GroupName="ABC" Content="direct" IsChecked="{Binding IsDirect}" Margin="5"></RadioButton>
                         <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding IsShared}" Margin="5"></RadioButton>
@@ -45,8 +46,11 @@
                         <TextBlock Grid.Column="0" Grid.Row="1" Text="password"></TextBlock>
                         <TextBlock Grid.Column="0" Grid.Row="2" Text="initial size (MB)"></TextBlock>
                         <TextBlock Grid.Column="0" Grid.Row="3" Text="collation"></TextBlock>
-                        <CheckBox Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Content="read only"></CheckBox>
-                        <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" Content="upgrade from LiteDB v4 (if needed)"></CheckBox>
+                        <CheckBox Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Content="read only"
+                                  IsChecked="{Binding IsReadOnly}"></CheckBox>
+                        <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"
+                                  IsChecked="{Binding IsUpgradingFromV4}"
+                                  Content="upgrade from LiteDB v4 (if needed)"></CheckBox>
 
                         <DockPanel Grid.Column="1" Grid.Row="0">
                             <Button DockPanel.Dock="Right"  Content="..." Click="SelectDbFileCLick" Margin="5 0 0 0"></Button>
@@ -55,20 +59,23 @@
                         <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding Password}" PasswordChar="*" Margin="5"></TextBox>
                         <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5" Value="{Binding InitSizeInMB}"></NumericUpDown>
                         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="5">
-                            <ComboBox MinWidth="80"></ComboBox>
+                            <ComboBox Items="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" MinWidth="80"></ComboBox>
                             <TextBlock Text="/" Margin="5"></TextBlock>
-                            <ComboBox MinWidth="80"></ComboBox>
+                            <ComboBox Items="{Binding CompareOptions}" SelectedItem="{Binding SelectedCompareOption}" MinWidth="80"></ComboBox>
                         </StackPanel>
 
                     </Grid>
                 </StackPanel>
             </Grid>
 
-            <Border Height="1" Background="{StaticResource LdbControlBackground}" HorizontalAlignment="Stretch" Margin="0 20 0 0 "></Border>
 
-            <Grid Margin="0 0 0 0 ">
-                <Button  Content="connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 5 5"></Button>
-            </Grid>
         </StackPanel>
+        <Border Grid.Row="1" Height="1" Background="{StaticResource LdbControlBackground}" HorizontalAlignment="Stretch"></Border>
+
+        <Grid Grid.Row="2" Margin="0 0 0 0 ">
+            <Button Height="40" IsEnabled="{Binding CanConnect}"  Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 20 20">
+                <TextBlock Text="connect" VerticalAlignment="Center"></TextBlock>
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>
