@@ -1,9 +1,9 @@
-namespace LiteDb.Studio.Avalonia.ViewModels
+namespace OneBella.ViewModels
 
 open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
-open LiteDb.Studio.Avalonia.Models.Utils
+open OneBella.Models.Utils
 open Microsoft.FSharp.Control
 open ReactiveUI
 

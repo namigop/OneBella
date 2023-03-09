@@ -1,4 +1,4 @@
-namespace LiteDb.Studio.Avalonia.Models
+namespace OneBella.Models
 
 open Microsoft.CodeAnalysis
 

@@ -1,4 +1,4 @@
-namespace LiteDb.Studio.Avalonia.Views
+namespace OneBella.Views
 
 open Avalonia
 open Avalonia.Controls

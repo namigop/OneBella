@@ -1,9 +1,9 @@
-﻿namespace LiteDb.Studio.Avalonia
+﻿namespace OneBella
 
 open System
 open Avalonia
 open Avalonia.ReactiveUI
-open LiteDb.Studio.Avalonia
+open OneBella
 
 module Program =
 

@@ -1,4 +1,4 @@
-namespace LiteDb.Studio.Avalonia.Views
+namespace OneBella.Views
 
 
 open System
@@ -38,7 +38,7 @@ type JsonTextEditor() as this=
             )
 
         this.foldingTimer.IsEnabled <- false
-        use resource = typeof<JsonTextEditor>.Assembly.GetManifestResourceStream("LiteDb.Studio.Avalonia.Resources.json.xshd")
+        use resource = typeof<JsonTextEditor>.Assembly.GetManifestResourceStream("OneBella.Resources.json.xshd")
         if not(resource = null) then
            use reader = new XmlTextReader(resource)
            editor.SyntaxHighlighting <- HighlightingLoader.Load(reader, HighlightingManager.Instance);

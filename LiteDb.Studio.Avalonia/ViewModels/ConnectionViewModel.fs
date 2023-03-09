@@ -1,12 +1,12 @@
-namespace LiteDb.Studio.Avalonia.ViewModels
+namespace OneBella.ViewModels
 
 open System
 open System.IO
 open System.Threading.Tasks
 open LiteDB
-open LiteDb.Studio.Avalonia.Models
+open OneBella.Models
 open ReactiveUI
-open LiteDb.Studio.Avalonia.Models.Utils
+open OneBella.Models.Utils
 
 type ConnectionViewModel() as this =
     inherit ViewModelBase()

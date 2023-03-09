@@ -1,11 +1,11 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:LiteDb.Studio.Avalonia.ViewModels"
-        xmlns:view="using:LiteDb.Studio.Avalonia.Views"
+        xmlns:vm="using:OneBella.ViewModels"
+        xmlns:view="using:OneBella.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="LiteDb.Studio.Avalonia.Views.MainWindow"
+        x:Class="OneBella.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Background="#26282A"
         WindowState="Maximized"
@@ -20,7 +20,7 @@
     <Grid RowDefinitions="Auto, Auto *">
         <Grid Grid.Row="0" HorizontalAlignment="Center" Margin="0 10 0 2">
             <!-- Main menu border -->
-            <Border CornerRadius="4" BorderThickness="1" BorderBrush="Black">
+            <Border CornerRadius="4" BorderThickness="0" BorderBrush="Black">
                 <Grid ColumnDefinitions="Auto,Auto, Auto, Auto">
                     <Grid.Styles>
                         <Style Selector="Button">
@@ -31,11 +31,11 @@
                     </Grid.Styles>
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                         <StackPanel.Styles>
-                          <Style Selector="Viewbox">
-                            <Setter Property="Width" Value="20" />
-                            <Setter Property="Height" Value="20" />
-                          </Style>
-                      </StackPanel.Styles>
+                            <Style Selector="Viewbox">
+                                <Setter Property="Width" Value="24" />
+                                <Setter Property="Height" Value="24" />
+                            </Style>
+                        </StackPanel.Styles>
                         <!-- add db -->
                         <Button Click="OpenConnectionWindowCLick">
                             <Viewbox>
@@ -56,18 +56,18 @@
                         </Button>
                     </StackPanel>
                     <!-- border for other buttons -->
-                    <Border Margin="0 0 0 0" Grid.Column="1" CornerRadius="4" Background="#4369C7" HorizontalAlignment="Center">
+                    <Border Margin="5 0 0 0" Grid.Column="1" CornerRadius="4" Background="#826293" HorizontalAlignment="Center">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" IsEnabled="{Binding !SelectedTab.IsBusy}">
                             <Button Content="begin" Command="{Binding SelectedTab.BeginCommand}"></Button>
                             <Button Content="commit" Command="{Binding SelectedTab.CommitCommand}"></Button>
                             <Button Content="rollback" Command="{Binding SelectedTab.RollbackCommand}"></Button>
                             <Border Background="White" Margin="5 0 5 0" Width="2" Height="20" BorderThickness="1"></Border>
-                            <Button Content="checkpoint" Command="{Binding SelectedTab.CheckpointCommand}" Margin="0 0 0 0" ></Button>
-                            <Button Content="shrink" Command="{Binding SelectedTab.ShrinkCommand}"></Button>
+                            <Button Content="checkpoint" Command="{Binding SelectedTab.CheckpointCommand}" Margin="0 0 0 0"></Button>
+                            <Button Content="shrink" Command="{Binding SelectedTab.ShrinkCommand}" Margin="0 0 5 0"></Button>
                         </StackPanel>
                     </Border>
                     <!-- border for combobox and start button -->
-                    <Border Margin="5 0 0 0" Grid.Column="2" CornerRadius="4" Background="#4E8C51" HorizontalAlignment="Center" IsEnabled="{Binding !SelectedTab.IsBusy}">
+                    <Border Margin="5 0 0 0" Grid.Column="2" CornerRadius="4" Background="#299BBC" HorizontalAlignment="Center" IsEnabled="{Binding !SelectedTab.IsBusy}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
                             <ComboBox VerticalAlignment="Center" BorderThickness="0"
@@ -121,6 +121,21 @@
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal">
+                            <StackPanel.Styles>
+                                <Style Selector="MenuItem">
+                                    <!-- sets the command for the context menuitem -->
+                                    <Setter Property="Command" Value="{Binding Command}"></Setter>
+                                </Style>
+                            </StackPanel.Styles>
+                            <StackPanel.DataTemplates>
+                                <DataTemplate  DataType="vm:DbAction">
+                                    <TextBlock Text="{Binding Header}"></TextBlock>
+                                </DataTemplate>
+                            </StackPanel.DataTemplates>
+                            <StackPanel.ContextMenu>
+                                <ContextMenu Items="{Binding ContextMenu}">
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
                             <Viewbox Width="18" Height="18" IsVisible="{Binding IsCollection}">
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="#299BBC"
@@ -141,13 +156,28 @@
                     <TabControl.ItemTemplate>
                         <DataTemplate>
                             <DockPanel>
-                                <!-- <Button Background="Transparent" Content="x" VerticalAlignment="Center" -->
-                                <!--         ToolTip.Tip="Close this tab" -->
-                                <!--         Margin="5 0 -5 0" -->
-                                <!--         Foreground="DarkGray" -->
-                                <!--         Padding="5 5 5 5" -->
-                                <!--         Command="{Binding CloseCommand}" -->
-                                <!--         DockPanel.Dock="Right" /> -->
+                                <Button Background="Transparent" Content="x" VerticalAlignment="Center"
+                                        ToolTip.Tip="Close this tab"
+                                        Margin="5 -2 0 0"
+                                        Foreground="DimGray"
+                                        Padding="5 5 5 5"
+
+                                        DockPanel.Dock="Right" >
+                                    <Button.Flyout>
+                                        <Flyout Placement="BottomEdgeAlignedLeft" ShowMode="TransientWithDismissOnPointerMoveAway"
+                                                Opened="ScriptTabFlyoutOpened">
+                                            <Border CornerRadius="4" BorderBrush="Black">
+                                                <Grid RowDefinitions="*, Auto">
+                                                    <TextBlock Text="Are you sure you want to close this tab?" Grid.Row="0" Margin="15"></TextBlock>
+                                                    <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0 0 10 10" HorizontalAlignment="Right">
+                                                        <Button Content="Yes" Click="ScriptTabFlyoutClickYes" x:Name="BtnYes" ></Button>
+                                                        <Button Content="No" Margin="5 0 0 0" ></Button>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
 
                                 <TextBlock Text="{Binding Header}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
                             </DockPanel>

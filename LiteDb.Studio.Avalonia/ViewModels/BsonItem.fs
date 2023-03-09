@@ -1,9 +1,9 @@
-namespace LiteDb.Studio.Avalonia.ViewModels
+namespace OneBella.ViewModels
 
 open System
 open System.Collections.Generic
 open LiteDB
-open LiteDb.Studio.Avalonia.Models
+open OneBella.Models
 open ReactiveUI
 
 type BsonItem(name: string, bVal: BsonValue, index :int) =

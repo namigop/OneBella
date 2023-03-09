@@ -1,4 +1,4 @@
-namespace LiteDb.Studio.Avalonia.ViewModels
+namespace OneBella.ViewModels
 
 open System
 open System.Collections.Generic
@@ -6,20 +6,21 @@ open System.Collections.ObjectModel
 open System.ComponentModel
 open System.Diagnostics
 open System.IO
+open System.Text
 open System.Threading
 open System.Threading.Tasks
 open Avalonia.Controls
 open Avalonia.Controls.Models.TreeDataGrid
 open Avalonia.Threading
 open LiteDB
-open LiteDb.Studio.Avalonia.Models.DbUtils
+open OneBella.Models.DbUtils
 open Microsoft.FSharp.Control
 open ReactiveUI
 
 type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
     inherit ViewModelBase()
 
-    let mutable cs = CancellationTokenSource()
+    let mutable cs = new CancellationTokenSource()
     let mutable resultDisplayTabIndex = 0
     let mutable isBusy = false
     let mutable err = ""
@@ -47,8 +48,9 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
 
     let beforeRunSql () =
         this.IsBusy <- true
-        cs <- CancellationTokenSource()
+        cs <- new CancellationTokenSource()
         json <- ""
+        this.Error <- ""
         result.Clear()
 
     let afterRunSql bsonValues (elapsed) =
@@ -56,7 +58,13 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
         Dispatcher.UIThread.Post(fun () ->
             for i in bsonValues do
                 result.Add(BsonItem("result", i, -1, IsExpanded = true))
-            paging.CalculatePages(elapsed))
+            if (String.IsNullOrEmpty this.Error) then
+                this.ResultDisplayTabIndex <- 0
+                paging.CalculatePages(elapsed)
+            else
+                //show the Text tab. It has the error message
+                this.ResultDisplayTabIndex <- 1)
+
 
 
     let runSql (sql: String) =
@@ -75,17 +83,15 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
             this.IsBusy <- false
         ReactiveCommand.Create(run)
 
+    let closeCommand =  ReactiveCommand.Create(fun () ->  ()  )
     let execute sql =
         beforeRunSql()
-        Task
-
-        runner <- Thread(ThreadStart(fun () ->
+        (fun () ->
             let sw = Stopwatch.StartNew()
             let bsonValues = runSql sql
             sw.Stop()
-            afterRunSql bsonValues sw.Elapsed))
-        runner.IsBackground <-true
-        runner.Start()
+            afterRunSql bsonValues sw.Elapsed)
+        |> Task.Run |> ignore
 
     let runCommand =
         ReactiveCommand.Create(fun () ->  execute this.Query  )
@@ -109,11 +115,22 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
 
     let getQueryJson () =
         if (String.IsNullOrEmpty json) then
-            if result.Count > 0 then
+            if paging.DisplaySource.Count = 1 then
                 json <- result.[0].AsJson()
+            elif (paging.DisplaySource.Count > 1) then
+                 seq{ 1..paging.DisplaySource.Count }
+                 |> Seq.zip paging.DisplaySource
+                 |> Seq.fold (fun (acc:StringBuilder) (b,i) -> acc.AppendLine($"// ({i})").AppendLine(b.AsJson())) (StringBuilder())
+                 |> fun sb -> json <- sb.ToString()
             else
                 json <- ""
         json
+
+    let getTextDisplay() =
+        if String.IsNullOrEmpty(this.Error) then
+            getQueryJson()
+        else
+            this.Error
 
     member x.Header = $"{Path.GetFileName(dbFile)} - {name}"
     member x.Paging = paging
@@ -124,8 +141,7 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
             let _ = x.RaiseAndSetIfChanged(&resultDisplayTabIndex, v)
             x.RaisePropertyChanged(nameof x.CanShowPaging)
             if (resultDisplayTabIndex = 1) then
-                x.RaisePropertyChanged(nameof x.QueryResultJson)
-
+                x.RaisePropertyChanged(nameof x.QueryResultText)
     member x.IsBusy
         with get () = isBusy
         and set v = x.RaiseAndSetIfChanged(&isBusy, v) |> ignore
@@ -134,6 +150,7 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
         with get () = err
         and set v = x.RaiseAndSetIfChanged(&err, v) |> ignore
 
+    member x.CloseCommand = closeCommand
     member x.BeginCommand = beginCommand
     member x.ShrinkCommand = shrinkCommand
     member x.RollbackCommand = rollbackCommand
@@ -147,7 +164,7 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
         with get () = query
         and set v = x.RaiseAndSetIfChanged(&query, v) |> ignore
 
-    member x.QueryResultJson = getQueryJson ()
+    member x.QueryResultText = getTextDisplay ()
     //and set (v) = this.RaiseAndSetIfChanged(&x.json, v) |> ignore
 
     interface IDisposable with

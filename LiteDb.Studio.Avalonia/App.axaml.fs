@@ -1,10 +1,10 @@
-namespace LiteDb.Studio.Avalonia
+namespace OneBella
 
 open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Markup.Xaml
-open LiteDb.Studio.Avalonia.ViewModels
-open LiteDb.Studio.Avalonia.Views
+open OneBella.ViewModels
+open OneBella.Views
 
 type App() =
     inherit Application()
@@ -15,10 +15,7 @@ type App() =
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-
              let vm = MainWindowViewModel()
-             //vm.Connect("/Users/erik.araojo/BeeRock/BeeRock.db")
-             //vm.Init("/Users/erik.araojo/BeeRock/BeeRock_bak.db")
              desktop.MainWindow <- MainWindow(DataContext = vm)
         | _ -> ()
 

@@ -1,4 +1,4 @@
-namespace LiteDb.Studio.Avalonia.ViewModels
+namespace OneBella.ViewModels
 
 open System
 open Avalonia.Controls
@@ -18,11 +18,17 @@ type ValueTemplateSelector() =
         // Build the DataTemplate here
         member x.Build(param:obj) : IControl =
             let item = param :?> BsonItem
-            //if (item = null) then
-            //    raise (new ArgumentNullException(nameof(param)))
             let key =
                 let isJson = item.Type = "string" && (item.Value.StartsWith("{") ||item.Value.StartsWith("["))
-                if isJson && content.ContainsKey("Json") then "Json"
+                if isJson && content.ContainsKey("JsonValue") then "JsonValue"
+                elif item.Type = "array" && content.ContainsKey("ArrayValue") then "ArrayValue"
+                elif item.Type = "document" && content.ContainsKey("DocValue") then "DocValue"
+                elif item.Type = "bool" && content.ContainsKey("BoolValue") then "BoolValue"
+                elif item.Type = "string" && content.ContainsKey("StringValue") then "StringValue"
+                elif (item.Type = "decimal" || item.Type = "double" || item.Type = "int"  || item.Type = "long"  ) && content.ContainsKey("NumberValue") then "NumberValue"
+                elif content.ContainsKey("OthersValue") then  "OthersValue"
+
+                //nameSelection options
                 elif item.Type = "document" && content.ContainsKey("Doc") then "Doc"
                 else "Others"
             x.AvailableTemplates[key].Build(param); // finally we look up the provided key and let the System build the DataTemplate for us

@@ -1,9 +1,9 @@
-namespace LiteDb.Studio.Avalonia
+namespace OneBella
 
 open System
 open Avalonia.Controls
 open Avalonia.Controls.Templates
-open LiteDb.Studio.Avalonia.ViewModels
+open OneBella.ViewModels
 
 type ViewLocator() =
     interface IDataTemplate with

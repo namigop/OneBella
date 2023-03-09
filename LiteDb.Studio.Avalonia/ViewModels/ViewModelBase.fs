@@ -1,4 +1,4 @@
-﻿namespace LiteDb.Studio.Avalonia.ViewModels
+﻿namespace OneBella.ViewModels
 
 open System.Runtime.CompilerServices
 open ReactiveUI

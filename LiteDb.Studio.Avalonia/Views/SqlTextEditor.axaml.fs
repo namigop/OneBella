@@ -1,4 +1,4 @@
-namespace LiteDb.Studio.Avalonia.Views
+namespace OneBella.Views
 
 
 open System
@@ -22,7 +22,7 @@ type SqlTextEditor() as this=
         let editor = this.FindControl<TextEditor>("Editor")
         editor.Document <- new TextDocument ( Text = "" );
         editor.TextChanged |> Event.add (fun a -> this.Text <- editor.Text)
-        use resource = typeof<SqlTextEditor>.Assembly.GetManifestResourceStream("LiteDb.Studio.Avalonia.Resources.sql.xshd")
+        use resource = typeof<SqlTextEditor>.Assembly.GetManifestResourceStream("OneBella.Resources.sql.xshd")
         if not(resource = null) then
            use reader = new XmlTextReader(resource)
            editor.SyntaxHighlighting <- HighlightingLoader.Load(reader, HighlightingManager.Instance);

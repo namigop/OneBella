@@ -1,11 +1,11 @@
-namespace LiteDb.Studio.Avalonia.Views
+namespace OneBella.Views
 
 open Avalonia
 open Avalonia.Controls
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Interactivity
 open Avalonia.Markup.Xaml
-open LiteDb.Studio.Avalonia.ViewModels
+open OneBella.ViewModels
 
 type ConnectionControl() as this =
     inherit UserControl()

@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             xmlns:vm="using:LiteDb.Studio.Avalonia.ViewModels"
-             x:Class="LiteDb.Studio.Avalonia.Views.ConnectionControl">
+             xmlns:vm="using:OneBella.ViewModels"
+             x:Class="OneBella.Views.ConnectionControl">
     <Design.DataContext>
         <vm:ConnectionViewModel />
     </Design.DataContext>
@@ -22,7 +22,7 @@
                 </StackPanel>
             </Grid>-->
 
-            <Grid Margin="0 20 0 0">
+            <Grid Margin="0 30 0 0">
                 <StackPanel Orientation="Vertical">
                     
                     <Grid ColumnDefinitions="Auto,*, Auto" RowDefinitions="Auto, Auto, Auto,Auto,Auto, Auto, Auto">

@@ -1,4 +1,4 @@
-module LiteDb.Studio.Avalonia.Models.DbUtils
+module OneBella.Models.DbUtils
 
 open System.IO
 open System.Text
