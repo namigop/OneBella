@@ -8,6 +8,7 @@
         x:Class="LiteDb.Studio.Avalonia.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Background="#26282A"
+        WindowState="Maximized"
         TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"
         Title="Light Debbie">
@@ -17,7 +18,7 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, Auto *">
-        <Grid Grid.Row="0" HorizontalAlignment="Center" Margin="0 2 0 2">
+        <Grid Grid.Row="0" HorizontalAlignment="Center" Margin="0 10 0 2">
             <!-- Main menu border -->
             <Border CornerRadius="4" BorderThickness="1" BorderBrush="Black">
                 <Grid ColumnDefinitions="Auto,Auto, Auto, Auto">
@@ -29,9 +30,15 @@
                         </Style>
                     </Grid.Styles>
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <StackPanel.Styles>
+                          <Style Selector="Viewbox">
+                            <Setter Property="Width" Value="20" />
+                            <Setter Property="Height" Value="20" />
+                          </Style>
+                      </StackPanel.Styles>
                         <!-- add db -->
                         <Button Click="OpenConnectionWindowCLick">
-                            <Viewbox Height="24" Width="24">
+                            <Viewbox>
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{StaticResource LdbTextColor}"
                                           Data="M20 13.09V7C20 4.79 16.42 3 12 3S4 4.79 4 7V17C4 19.21 7.59 21 12 21C12.46 21 12.9 21 13.33 20.94C13.12 20.33 13 19.68 13 19L13 18.95C12.68 19 12.35 19 12 19C8.13 19 6 17.5 6 17V14.77C7.61 15.55 9.72 16 12 16C12.65 16 13.27 15.96 13.88 15.89C14.93 14.16 16.83 13 19 13C19.34 13 19.67 13.04 20 13.09M18 12.45C16.7 13.4 14.42 14 12 14S7.3 13.4 6 12.45V9.64C7.47 10.47 9.61 11 12 11S16.53 10.47 18 9.64V12.45M12 9C8.13 9 6 7.5 6 7S8.13 5 12 5 18 6.5 18 7 15.87 9 12 9M23 18V20H20V23H18V20H15V18H18V15H20V18H23Z" />
@@ -39,8 +46,8 @@
                             </Viewbox>
                         </Button>
                         <!-- remove db -->
-                        <Button Command="{Binding SelectedTab.RunCommand}">
-                            <Viewbox Height="24" Width="24">
+                        <Button Command="{Binding SelectedTab.NotImplementedCommand}">
+                            <Viewbox>
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{StaticResource LdbTextColor}"
                                           Data="M2.39 1.73L1.11 3L4.21 6.1C4.08 6.39 4 6.69 4 7V17C4 19.21 7.59 21 12 21C14.3 21 16.38 20.5 17.84 19.73L20.84 22.73L22.11 21.46L2.39 1.73M6 9.64C6.76 10.07 7.7 10.42 8.76 10.65L12.11 14C12.07 14 12.04 14 12 14C9.58 14 7.3 13.4 6 12.45V9.64M12 19C8.13 19 6 17.5 6 17V14.77C7.61 15.55 9.72 16 12 16C12.68 16 13.34 15.95 14 15.87L16.34 18.23C15.33 18.65 13.87 19 12 19M8.64 5.44L7.06 3.86C8.42 3.33 10.13 3 12 3C16.42 3 20 4.79 20 7V16.8L18 14.8V14.77L18 14.78L16.45 13.25C17.05 13.03 17.58 12.76 18 12.45V9.64C16.97 10.22 15.61 10.65 14.06 10.86L12.19 9C15.94 8.94 18 7.5 18 7C18 6.5 15.87 5 12 5C10.66 5 9.54 5.18 8.64 5.44Z" />
@@ -73,7 +80,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <Button Command="{Binding SelectedTab.RunCommand}">
-                                <Viewbox Height="24" Width="24">
+                                <Viewbox>
                                     <Canvas Width="24" Height="24">
                                         <Path Fill="White" Data="M8.5,8.64L13.77,12L8.5,15.36V8.64M6.5,5V19L17.5,12" />
                                     </Canvas>
@@ -84,18 +91,18 @@
                     </Border>
 
                     <!-- stop button -->
-                    <Border Margin="5 0 0 0" Grid.Column="3" CornerRadius="4" Background="#DC7875" IsEnabled="{Binding SelectedTab.IsBusy}">
-                        <!-- <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"> -->
+                    <!--<Border Margin="5 0 0 0" Grid.Column="3" CornerRadius="4" Background="#DC7875" IsEnabled="{Binding SelectedTab.IsBusy}">
+                      
                         <Button Command="{Binding SelectedTab.StopCommand}" Margin="-1 0 0 0">
-                            <Viewbox Width="20" Height="20">
+                            <Viewbox>
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="White"
                                           Data="M8 3H16C18.76 3 21 5.24 21 8V16C21 18.76 18.76 21 16 21H8C5.24 21 3 18.76 3 16V8C3 5.24 5.24 3 8 3M8 5C6.34 5 5 6.34 5 8V16C5 17.66 6.34 19 8 19H16C17.66 19 19 17.66 19 16V8C19 6.34 17.66 5 16 5H8Z" />
                                 </Canvas>
                             </Viewbox>
                         </Button>
-                        <!-- </StackPanel> -->
-                    </Border>
+                       
+                    </Border>-->
 
 
                 </Grid>

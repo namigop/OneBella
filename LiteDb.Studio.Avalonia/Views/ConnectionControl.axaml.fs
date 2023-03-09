@@ -24,7 +24,7 @@ type ConnectionControl() as this =
                 | :? IClassicDesktopStyleApplicationLifetime as desktop ->
                     let dg = OpenFileDialog()
                     dg.AllowMultiple <- false
-                    dg.Title = "select the liteDb file"
+                    dg.Title <- "select the liteDb file"
                     let w = this.Parent.Parent :?> Window
                     let! files = dg.ShowAsync(w) |> Async.AwaitTask
                     this.VieModel.Set(files)

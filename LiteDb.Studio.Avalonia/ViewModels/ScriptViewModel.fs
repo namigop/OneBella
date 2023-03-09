@@ -93,7 +93,9 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
     let checkpointCommand =
         let run () = checkpoint db
         ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
-
+    let shrinkCommand =
+        let run () = shrink db
+        ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
     let beginCommand =
         ReactiveCommand.Create(fun() -> execute ("BEGIN"))
         //ReactiveCommand.Create(fun () -> Async.StartImmediate(runSql ("BEGIN")))
@@ -133,6 +135,7 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
         and set v = x.RaiseAndSetIfChanged(&err, v) |> ignore
 
     member x.BeginCommand = beginCommand
+    member x.ShrinkCommand = shrinkCommand
     member x.RollbackCommand = rollbackCommand
     member x.CommitCommand = commitCommand
     member x.RunCommand = runCommand

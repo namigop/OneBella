@@ -97,7 +97,7 @@ type ConnectionViewModel() as this =
     member x.SelectFileTask = ts.Task
 
     member x.Set(result: string[]) =
-        if (result.Length > 0) then
+        if not(result =null) && (result.Length > 0) then
             x.DbFile <- result[0]
 
     member x.GetParameters() : ConnectionParameters =

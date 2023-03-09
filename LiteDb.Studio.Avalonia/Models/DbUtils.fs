@@ -17,8 +17,8 @@ let checkpoint (db: LiteDatabase) =
 
 let shrink (db: LiteDatabase) =
     async {
-        let! ret = db.Rebuild |> Task.Run |> Async.AwaitTask
-        return ret
+        let! _ = db.Rebuild |> Task.Run |> Async.AwaitTask
+        ()
     }
 
 let readResult (token: CancellationToken) (reader2: IBsonDataReader) =

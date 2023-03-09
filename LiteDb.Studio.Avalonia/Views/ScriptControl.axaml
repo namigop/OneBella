@@ -69,10 +69,10 @@
             </TabControl>
 
             <!-- Progress Bar In the middle -->
-            <Border Padding="4" CornerRadius="4" Background="{StaticResource LdbWindowBackground}" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border Padding="4" CornerRadius="4" Background="{StaticResource LdbWindowBackground}" IsVisible="{Binding IsBusy}"  VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Grid RowDefinitions="Auto,Auto">
                     <TextBlock Text="Running query.."></TextBlock>
-                    <ProgressBar Grid.Row="1" IsVisible="{Binding IsBusy}" IsIndeterminate="True"
+                    <ProgressBar Grid.Row="1" IsIndeterminate="True"
                                  Height="8">
                     </ProgressBar>
                 </Grid>

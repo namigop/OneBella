@@ -12,7 +12,7 @@
     <Grid Margin="0 30 0 0" RowDefinitions="*, Auto, Auto">
         <StackPanel Orientation="Vertical" Grid.Row="0" Margin="30 0 30 0">
             <TextBlock Text="Connect to database" FontSize="20" HorizontalAlignment="Center" ></TextBlock>
-            <Grid>
+            <!--<Grid>
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="H1" Text="connection mode" Margin="0 10 0 10"></TextBlock>
                     <StackPanel Orientation="Horizontal">
@@ -20,12 +20,12 @@
                         <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding IsShared}" Margin="5"></RadioButton>
                     </StackPanel>
                 </StackPanel>
-            </Grid>
+            </Grid>-->
 
             <Grid Margin="0 20 0 0">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="parameters" Classes="H1" Margin="0 0 0 10"></TextBlock>
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto, Auto, Auto,Auto,Auto, Auto">
+                    
+                    <Grid ColumnDefinitions="Auto,*, Auto" RowDefinitions="Auto, Auto, Auto,Auto,Auto, Auto, Auto">
                         <Grid.Styles>
                             <Style Selector="TextBlock">
                                 <Setter Property="Foreground" Value="{StaticResource LdbTextColor}"></Setter>
@@ -46,16 +46,24 @@
                         <TextBlock Grid.Column="0" Grid.Row="1" Text="password"></TextBlock>
                         <TextBlock Grid.Column="0" Grid.Row="2" Text="initial size (MB)"></TextBlock>
                         <TextBlock Grid.Column="0" Grid.Row="3" Text="collation"></TextBlock>
-                        <CheckBox Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Content="read only"
+                        <TextBlock Grid.Column="0" Grid.Row="4" Text="mode"></TextBlock>
+
+                      <StackPanel Orientation="Horizontal"  Grid.Column="1" Grid.Row="4">
+                        <RadioButton GroupName="ABC" Content="direct" IsChecked="{Binding IsDirect}" Margin="5"></RadioButton>
+                        <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding IsShared}" Margin="5"></RadioButton>
+                      </StackPanel>
+                      
+                       <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" Content="read only"
                                   IsChecked="{Binding IsReadOnly}"></CheckBox>
-                        <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"
+                        <CheckBox Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2"
                                   IsChecked="{Binding IsUpgradingFromV4}"
                                   Content="upgrade from LiteDB v4 (if needed)"></CheckBox>
 
                         <DockPanel Grid.Column="1" Grid.Row="0">
-                            <Button DockPanel.Dock="Right"  Content="..." Click="SelectDbFileCLick" Margin="5 0 0 0"></Button>
+                            
                             <TextBox Text="{Binding DbFile}"></TextBox>
                         </DockPanel>
+                      <Button  Grid.Column="1" Grid.Row="0"  Content="..." Click="SelectDbFileCLick" Margin="0 0 5 0" HorizontalAlignment="Right"></Button>
                         <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding Password}" PasswordChar="*" Margin="5"></TextBox>
                         <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5" Value="{Binding InitSizeInMB}"></NumericUpDown>
                         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="5">
