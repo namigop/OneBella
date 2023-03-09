@@ -32,17 +32,15 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
     do
         source <-
             let temp = new HierarchicalTreeDataGridSource<BsonItem>(paging.DisplaySource)
-
             temp.Columns.Add(
                 HierarchicalExpanderColumn<BsonItem>(
-                    //sdfs
+                    //comment to prevent auto-format to 1 line
                     TemplateColumn<BsonItem>("key", "BsonItemNameSelector"),
                     (fun (x: BsonItem) -> x.Children),
                     (fun x -> x.HasChildren),
                     (fun x -> x.IsExpanded)
                 )
             )
-
             temp.Columns.Add(TemplateColumn<BsonItem>("value", "BsonItemValueSelector", GridLength(1, GridUnitType.Star)))
             temp.Columns.Add(new TextColumn<BsonItem, string>("type", (fun b -> b.Type)))
             temp
@@ -74,15 +72,13 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
     let stopCommand =
         let run () =
             cs.Cancel()
-            runner.abort
             this.IsBusy <- false
-
         ReactiveCommand.Create(run)
-
-
 
     let execute sql =
         beforeRunSql()
+        Task
+
         runner <- Thread(ThreadStart(fun () ->
             let sw = Stopwatch.StartNew()
             let bsonValues = runSql sql
@@ -115,14 +111,11 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
                 json <- result.[0].AsJson()
             else
                 json <- ""
-
         json
 
     member x.Header = $"{Path.GetFileName(dbFile)} - {name}"
     member x.Paging = paging
-
     member x.CanShowPaging = x.ResultDisplayTabIndex = 0
-
     member x.ResultDisplayTabIndex
         with get () = resultDisplayTabIndex
         and set v =

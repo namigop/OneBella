@@ -68,11 +68,19 @@
                 </TabItem>
             </TabControl>
 
-            <!-- paging controls -->
-            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5 10 10 5" ColumnDefinitions="Auto, *" IsVisible="{Binding CanShowPaging}">
+            <!-- Progress Bar In the middle -->
+            <Border Padding="4" CornerRadius="4" Background="{StaticResource LdbWindowBackground}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Grid RowDefinitions="Auto,Auto">
+                    <TextBlock Text="Running query.."></TextBlock>
+                    <ProgressBar Grid.Row="1" IsVisible="{Binding IsBusy}" IsIndeterminate="True"
+                                 Height="8">
+                    </ProgressBar>
+                </Grid>
+            </Border>
 
-                <ProgressBar Grid.Column="0" IsVisible="{Binding IsBusy}" IsIndeterminate="True" MaxWidth="40" Height="10"></ProgressBar>
-                <TextBlock Grid.Column="0" Text="{Binding Paging.ElapsedTime}" IsVisible="{Binding !IsBusy}" Foreground="DarkGray" FontSize="13"
+            <!-- paging controls -->
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5 10 10 5" ColumnDefinitions="Auto, Auto" IsVisible="{Binding CanShowPaging}">
+                <TextBlock Grid.Column="0" Text="{Binding Paging.RunInfo}" IsVisible="{Binding !IsBusy}" Foreground="DarkGray" FontSize="13"
                            Margin="0 0 5 0" VerticalAlignment="Center">
                 </TextBlock>
 
@@ -99,7 +107,7 @@
                         <Viewbox Width="24" Height="24">
                             <Canvas
                                 Width="24" Height="24">
-                                <Path  Data="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                                <Path Data="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
                             </Canvas>
                         </Viewbox>
                     </Button>
@@ -110,7 +118,7 @@
                     <Button ToolTip.Tip="Next" Command="{Binding Paging.NextPageCommand}">
                         <Viewbox Width="24" Height="24">
                             <Canvas Width="24" Height="24">
-                                <Path   Data="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                                <Path Data="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
                             </Canvas>
                         </Viewbox>
                     </Button>
@@ -118,7 +126,7 @@
                         <Viewbox Width="24" Height="24">
                             <Canvas
                                 Width="24" Height="24">
-                                <Path  Data="M5.59,7.41L7,6L13,12L7,18L5.59,16.59L10.17,12L5.59,7.41M11.59,7.41L13,6L19,12L13,18L11.59,16.59L16.17,12L11.59,7.41Z" />
+                                <Path Data="M5.59,7.41L7,6L13,12L7,18L5.59,16.59L10.17,12L5.59,7.41M11.59,7.41L13,6L19,12L13,18L11.59,16.59L16.17,12L11.59,7.41Z" />
                             </Canvas>
                         </Viewbox>
                     </Button>

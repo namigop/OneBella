@@ -3,13 +3,7 @@ namespace LiteDb.Studio.Avalonia.ViewModels
 open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
-open System.IO
-open System.Threading
-open System.Threading.Tasks
-open Avalonia.Controls
-open Avalonia.Controls.Models.TreeDataGrid
-open LiteDB
-open LiteDb.Studio.Avalonia.Models.DbUtils
+open LiteDb.Studio.Avalonia.Models.Utils
 open Microsoft.FSharp.Control
 open ReactiveUI
 
@@ -60,31 +54,16 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
 
         ReactiveCommand.Create(run)
 
-    let getPages (pageSize:int) (total:int) =
-        let p = Dictionary<int, (int*int)>()
-        if (pageSize > total) then
-            p[0] <- (0, total-1)
-        else
-            let maxPageCount = (total / pageSize) + 1
-            for i in 0..(maxPageCount-1) do
-                let pageStart = i * pageSize
-                if (pageStart < total) then
-                    let pageEnd = pageStart + pageSize - 1
-                    p[i] <- (pageStart, if (pageEnd < total-1) then pageEnd else total-1)
-        p
-
-    let trySplitUp() =
-            if source.Count = 1 && source[0].Type = "document" then
-               //if the result of the query is a single key with an array, we'll flatten it
-               //  - this is the case for SELECT statements
-               if (Seq.length source[0].Children) = 1 then
-                    let docs = source[0].Children |> Seq.head |> (fun f -> f.Children)
-                    tempSource.Clear()
-                    for d in docs do
-                        tempSource.Add d
-
-
-
+    let tryFlatten (queryResult: ObservableCollection<BsonItem>) =
+       //if the result of the query is a single key with an array, we'll flatten it
+       //  - this is the case for SELECT statements
+       let hasSingleDocResult = queryResult.Count = 1 && queryResult[0].Type = "document"
+       let documentHasSingleArrayChild = Seq.length queryResult[0].Children = 1 && (queryResult[0].Children |> Seq.head).Type = "array"
+       if  hasSingleDocResult && documentHasSingleArrayChild then
+             let docs = queryResult[0].Children |> Seq.head |> (fun f -> f.Children)
+             docs
+       else
+           Seq.empty
 
     member x.DisplaySource = displaySource
     member x.EndPageCommand = endPageCommand
@@ -94,17 +73,24 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
     member x.PageSize
         with get () = pageSize
         and set v = x.RaiseAndSetIfChanged(&pageSize, v) |> ignore
-    member x.ElapsedTime
-        with get() = "elapsed: " + elapsed.ToString("mm\:ss\.ff")
+    member x.RunInfo
+        with get() =
+            let d = if tempSource.Count > 1 then "documents" else "document"
+            $"{tempSource.Count} {d} : " + elapsed.ToString("mm\:ss\.fff")
 
     member x.CalculatePages(elapsed2:TimeSpan) =
-        elapsed <- elapsed2
         pages.Clear()
         tempSource <- source
 
-        x.RaisePropertyChanged(nameof x.ElapsedTime)
-        trySplitUp()
+        let flattened = tryFlatten source
+        if not (Seq.isEmpty flattened) then
+            tempSource.Clear()
+            flattened |> Seq.iter (fun i -> tempSource.Add i)
+
         if (tempSource.Count > 0) then
             for kvp in getPages x.PageSize tempSource.Count do
                 pages[kvp.Key] <- kvp.Value
             showPage 0
+
+        elapsed <- elapsed2
+        x.RaisePropertyChanged(nameof x.RunInfo)

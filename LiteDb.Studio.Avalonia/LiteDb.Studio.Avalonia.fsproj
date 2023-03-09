@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
+        <TrimMode>copyused</TrimMode>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    </PropertyGroup>
+    <ItemGroup>
+        <Folder Include="Models\" />
+        <AvaloniaResource Include="Assets\**" />
+        <EmbeddedResource Include="Resources\json.xshd" />
+        <EmbeddedResource Include="Resources\sql.xshd" />
+        <AvaloniaResource Include="Resources\Styles.xaml" />
+        <AvaloniaResource Include="Resources\Resources.xaml" />
+        <None Remove=".gitignore" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Models\Utils.fs" />
+        <Compile Include="Models\ConnectionParameters.fs" />
+        <Compile Include="Models\DbUtils.fs" />
+        <Compile Include="Models\SqlRun.fs" />
+        <Compile Include="ViewModels\ViewModelBase.fs" />
+        <Compile Include="ViewModels\BsonItem.fs" />
+        <Compile Include="ViewModels\DbItem.fs" />
+        <Compile Include="ViewModels\PagingViewModel.fs" />
+        <Compile Include="ViewModels\ScriptViewModel.fs" />
+        <Compile Include="ViewModels\ConnectionViewModel.fs" />
+        <Compile Include="ViewModels\MainWindowViewModel.fs" />
+        <Compile Include="ViewModels\ValueTemplateSelector.fs" />
+        <Compile Include="Views\ConnectionControl.axaml.fs" />
+        <Compile Include="Views\AddConnectionWindow.axaml.fs" />
+        <Compile Include="Views\CharFoldingStrategy.fs" />
+        <Compile Include="Views\ScriptControl.axaml.fs" />
+        <Compile Include="Views\SqlTextEditor.axaml.fs" />
+        <Compile Include="Views\JsonTextEditor.axaml.fs" />
+        <Compile Include="Views\MainWindow.axaml.fs" />
+        <Compile Include="ViewLocator.fs" />
+        <Compile Include="App.axaml.fs" />
+        <Compile Include="Program.fs" />
+
+    </ItemGroup>
+    <ItemGroup>
+        <!--This helps with theme dll-s trimming.
+        If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
+        https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
+        <TrimmableAssembly Include="Avalonia.Themes.Fluent" />
+        <TrimmableAssembly Include="Avalonia.Themes.Default" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.18" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.12.2" />
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="0.10.18.1" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.18" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
+        <PackageReference Include="LiteDB" Version="5.0.15" />
+    </ItemGroup>
+</Project>
