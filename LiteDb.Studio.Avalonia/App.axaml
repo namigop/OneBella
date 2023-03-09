@@ -1,13 +1,14 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:OneBella"
+             Name="OneBella"
              x:Class="OneBella.App">
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
     <NativeMenu.Menu>
         <NativeMenu>
-            <NativeMenuItem Header="About BeeRock"  />
+            <NativeMenuItem Header="About OneBella"  />
         </NativeMenu>
     </NativeMenu.Menu>
     <Application.Resources>

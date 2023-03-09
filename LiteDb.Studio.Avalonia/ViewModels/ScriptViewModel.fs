@@ -17,7 +17,7 @@ open OneBella.Models.DbUtils
 open Microsoft.FSharp.Control
 open ReactiveUI
 
-type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
+type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as this =
     inherit ViewModelBase()
 
     let mutable cs = new CancellationTokenSource()
@@ -69,13 +69,15 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
 
     let runSql (sql: String) =
         try
-            use reader = exec db sql
+            let liteDb = db()
+            if liteDb = null then
+                failwith "Database is disconnected"
+
+            use reader = exec (db()) sql
             reader |> readResult cs.Token
         with exc ->
             this.Error <- exc.ToString()
             Seq.empty
-
-    let mutable runner = Unchecked.defaultof<Thread>
 
     let stopCommand =
         let run () =
@@ -83,7 +85,6 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
             this.IsBusy <- false
         ReactiveCommand.Create(run)
 
-    let closeCommand =  ReactiveCommand.Create(fun () ->  ()  )
     let execute sql =
         beforeRunSql()
         (fun () ->
@@ -97,10 +98,10 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
         ReactiveCommand.Create(fun () ->  execute this.Query  )
 
     let checkpointCommand =
-        let run () = checkpoint db
+        let run () = db() |> checkpoint
         ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
     let shrinkCommand =
-        let run () = shrink db
+        let run () = db() |> shrink
         ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
     let beginCommand =
         ReactiveCommand.Create(fun() -> execute ("BEGIN"))
@@ -150,7 +151,6 @@ type ScriptViewModel(db: LiteDatabase, dbFile: string, name: string) as this =
         with get () = err
         and set v = x.RaiseAndSetIfChanged(&err, v) |> ignore
 
-    member x.CloseCommand = closeCommand
     member x.BeginCommand = beginCommand
     member x.ShrinkCommand = shrinkCommand
     member x.RollbackCommand = rollbackCommand

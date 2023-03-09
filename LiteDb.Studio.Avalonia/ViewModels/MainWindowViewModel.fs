@@ -16,17 +16,17 @@ type MainWindowViewModel()  as this=
     let mutable db = Unchecked.defaultof<LiteDatabase>
     let mutable selectedTab = Unchecked.defaultof<ScriptViewModel>
 
-    let openNewTab liteDb dbFile tableName=
+    let openNewTab getLiteDb dbFile tableName=
        let scriptName = scriptTabs |> Seq.map (fun c -> c.Header)  |>getScriptName
-       let tab = new ScriptViewModel(liteDb, dbFile, scriptName)
+       let tab = new ScriptViewModel(getLiteDb, dbFile, scriptName)
        tab.Query <- getDefaultSql tableName
        scriptTabs.Add(tab)
        this.SelectedTab <-tab
 
 
-    let createTableItem liteDb dbFile tableName =
+    let createTableItem getLiteDb dbFile tableName =
         let temp = DbItem(Title = tableName, IsCollection = true)
-        let newTabAction = DbAction( (fun() -> openNewTab liteDb dbFile tableName), Header="open new tab")
+        let newTabAction = DbAction( (fun() -> openNewTab getLiteDb dbFile tableName), Header="open new tab")
         temp.ContextMenu.Add(newTabAction)
 
         temp
@@ -41,13 +41,15 @@ type MainWindowViewModel()  as this=
 
     member x.Connect(con: ConnectionParameters) =
         let dbFile = con.DbFile
+        let conString = buildConString con
+        let liteDb =  getDb conString
+
         let name = Path.GetFileName dbFile
-        let root = DbItem(Title = name, IsExpanded = true)
-        x.DbItems.Add root
+        let root = DbFileItem(liteDb, conString, Title = name, IsExpanded = true)
+
         let system = DbItem(Title = "System")
         root.Children.Add system
-
-        let liteDb = con |> buildConString |> getDb
+        let getLiteDb = fun () -> root.LiteDb
 
         liteDb
         |> getSystemTables
@@ -56,12 +58,12 @@ type MainWindowViewModel()  as this=
 
         let collections = getCollectionNames liteDb
         collections
-        |> Seq.map (fun name -> createTableItem liteDb dbFile name)
+        |> Seq.map (fun name -> createTableItem getLiteDb dbFile name)
         |> Seq.iter (fun item -> root.Children.Add item)
 
         if (Seq.length collections) > 0 then
-            openNewTab liteDb dbFile (Seq.head collections)
+            openNewTab getLiteDb dbFile (Seq.head collections)
 
-
+        x.DbItems.Add root
         x.SelectedTab <- scriptTabs[0]
         db <- liteDb

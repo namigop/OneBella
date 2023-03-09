@@ -1,17 +1,7 @@
 namespace OneBella.ViewModels
 open System.Collections.ObjectModel
+open LiteDB
 open ReactiveUI
-
-type DbAction(run:unit -> unit) =
-    inherit ViewModelBase()
-    let mutable header = ""
-
-    let cmd = ReactiveCommand.Create run
-
-    member x.Command = cmd
-    member x.Header
-        with get() = header
-        and set v = x.RaiseAndSetIfChanged(&header,v) |> ignore
 
 type DbItem() =
     inherit ViewModelBase()
@@ -34,3 +24,6 @@ type DbItem() =
     member x.IsCollection
         with get() = isCollection
         and set(v) =  x.RaiseAndSetIfChanged(&isCollection, v) |> ignore
+
+    abstract IsConnected : bool
+    default x.IsConnected with get() = true

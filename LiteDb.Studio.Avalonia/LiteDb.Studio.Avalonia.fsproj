@@ -42,7 +42,9 @@
         <Compile Include="Models\SqlRun.fs" />
         <Compile Include="ViewModels\ViewModelBase.fs" />
         <Compile Include="ViewModels\BsonItem.fs" />
+        <Compile Include="ViewModels\DbAction.fs" />
         <Compile Include="ViewModels\DbItem.fs" />
+        <Compile Include="ViewModels\DbFileItem.fs" />
         <Compile Include="ViewModels\PagingViewModel.fs" />
         <Compile Include="ViewModels\ScriptViewModel.fs" />
         <Compile Include="ViewModels\ConnectionViewModel.fs" />
