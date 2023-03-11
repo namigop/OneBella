@@ -41,7 +41,8 @@ type MainWindowViewModel()  as this=
 
     member x.Connect(con: ConnectionParameters) =
         let dbFile = con.DbFile
-        let conString = buildConString con
+        let conString = con.ToConnectionString()
+        
         let liteDb =  getDb conString
 
         let name = Path.GetFileName dbFile

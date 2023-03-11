@@ -8,11 +8,11 @@ open OneBella.Models
 open ReactiveUI
 open OneBella.Models.Utils
 
-type ConnectionViewModel() as this =
+type ConnectionViewModel(cs:ConnectionString) as this =
     inherit ViewModelBase()
 
-    let ts = new TaskCompletionSource<ConnectionParameters>()
-    let cs = new ConnectionString()
+    let mutable ts = new TaskCompletionSource<ConnectionParameters>()
+    //let cs = new ConnectionString()
 
 
     let mutable dbFile = ""
@@ -22,6 +22,7 @@ type ConnectionViewModel() as this =
     let mutable initSizeInMB = 0L
     let mutable isReadOnly = false
     let mutable isUpgradingFromV4 = false
+    let mutable error = ""
 
     let mutable selectedCulture =
         if not (cs.Collation = null) then
@@ -56,6 +57,12 @@ type ConnectionViewModel() as this =
     member x.SelectedCulture
         with get () = selectedCulture
         and set v = x.RaiseAndSetIfChanged(&selectedCulture, v) |> ignore
+
+    member x.Error
+        with get () = error
+        and set v = 
+            x.RaiseAndSetIfChanged(&error, v) |> ignore
+            ts <- TaskCompletionSource<ConnectionParameters>()
 
     member x.SelectedCompareOption
         with get () = selectedCompareOption

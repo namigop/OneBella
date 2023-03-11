@@ -10,11 +10,11 @@ open OneBella.ViewModels
 type ConnectionControl() as this =
     inherit UserControl()
 
-    let vm = ConnectionViewModel()
+    //let vm = ConnectionViewModel()
     do AvaloniaXamlLoader.Load(this)
-    do this.DataContext <- vm
+    //do this.DataContext <- vm
 
-    member x.VieModel = vm
+    member x.VieModel = this.DataContext :?> ConnectionViewModel
 
 
     member private this.SelectDbFileCLick(send: obj, args: RoutedEventArgs) =

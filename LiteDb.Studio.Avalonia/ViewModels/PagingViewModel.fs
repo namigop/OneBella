@@ -60,10 +60,10 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
        let hasSingleDocResult = queryResult.Count = 1 && queryResult[0].Type = "document"
        let documentHasSingleArrayChild = Seq.length queryResult[0].Children = 1 && (queryResult[0].Children |> Seq.head).Type = "array"
        if  hasSingleDocResult && documentHasSingleArrayChild then
-             let docs = queryResult[0].Children |> Seq.head |> (fun f -> f.Children)
-             docs
+           let docs = queryResult[0].Children |> Seq.head |> (fun f -> f.Children)
+           true, docs
        else
-           Seq.empty
+           false, Seq.empty
 
     member x.DisplaySource = displaySource
     member x.EndPageCommand = endPageCommand
@@ -75,15 +75,15 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
         and set v = x.RaiseAndSetIfChanged(&pageSize, v) |> ignore
     member x.RunInfo
         with get() =
-            let d = if tempSource.Count > 1 then "documents" else "document"
+            let d = if tempSource.Count = 1 then "document" else "documents"
             $"{tempSource.Count} {d} : " + elapsed.ToString("mm\:ss\.fff")
 
     member x.CalculatePages(elapsed2:TimeSpan) =
         pages.Clear()
         tempSource <- source
 
-        let flattened = tryFlatten source
-        if not (Seq.isEmpty flattened) then
+        let ok,flattened = tryFlatten source
+        if ok then
             tempSource.Clear()
             flattened |> Seq.iter (fun i -> tempSource.Add i)
 
