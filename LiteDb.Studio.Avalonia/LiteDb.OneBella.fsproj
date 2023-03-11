@@ -25,6 +25,12 @@
     <ItemGroup>
         <Compile Include="Core\Utils.fs" />
         <Compile Include="Core\DbUtils.fs" />
+        <Content Include="..\LICENSE">
+          <Link>LICENSE</Link>
+        </Content>
+        <Content Include="..\README.md">
+          <Link>README.md</Link>
+        </Content>
         <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
         <EmbeddedResource Include="Resources\json.xshd" />
