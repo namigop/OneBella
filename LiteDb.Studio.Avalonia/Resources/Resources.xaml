@@ -11,6 +11,7 @@
     <!-- </Viewbox> -->
 
     <SolidColorBrush x:Key="LdbTextColor" Color="#CFDCEC"></SolidColorBrush>
-    <SolidColorBrush x:Key="LdbWindowBackground" Color="#26282A" />
-    <SolidColorBrush x:Key="LdbControlBackground" Color="#1C1D1F"></SolidColorBrush>
+    <SolidColorBrush x:Key="LdbWindowBackground" Color="#16191F" />
+    <SolidColorBrush x:Key="LdbControlBackground" Color="#101217"></SolidColorBrush>
+    <SolidColorBrush x:Key="LdbGrayedOutColor" Color="#737A84"></SolidColorBrush>
 </ResourceDictionary>

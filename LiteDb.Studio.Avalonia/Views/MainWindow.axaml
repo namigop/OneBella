@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OneBella.Views.MainWindow"
         Icon="/Assets/ldb.ico"
-        Background="#26282A"
+        Background="{StaticResource LdbWindowBackground}"
         WindowState="Maximized"
         TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"
@@ -107,7 +107,7 @@
                 </Grid>
             </Border>
         </Grid>
-        <Border Height="1" Background="#1C1D1F" HorizontalAlignment="Stretch" Grid.Row="1"></Border>
+        <Border Height="2" Background="#1F2228" HorizontalAlignment="Stretch" Grid.Row="1"></Border>
 
         <Grid Grid.Row="2" ColumnDefinitions="Auto, 5, *">
             <!-- navtree -->
@@ -151,7 +151,7 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  />
 
             <Grid Grid.Column="2">
                 <TabControl Items="{Binding Tabs}" SelectedItem="{Binding SelectedTab}">

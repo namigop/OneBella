@@ -20,12 +20,12 @@ open ReactiveUI
 type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as this =
     inherit ViewModelBase()
 
-    let mutable cs = new CancellationTokenSource()
     let mutable resultDisplayTabIndex = 0
     let mutable isBusy = false
     let mutable err = ""
     let mutable json = ""
     let mutable query = "select * from DocRuleDao"
+
     let result = ObservableCollection<BsonItem>()
     let paging = PagingViewModel(result)
     let mutable source = Unchecked.defaultof<HierarchicalTreeDataGridSource<BsonItem>>
@@ -33,6 +33,7 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
     do
         source <-
             let temp = new HierarchicalTreeDataGridSource<BsonItem>(paging.DisplaySource)
+
             temp.Columns.Add(
                 HierarchicalExpanderColumn<BsonItem>(
                     //comment to prevent auto-format to 1 line
@@ -42,107 +43,126 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
                     (fun x -> x.IsExpanded)
                 )
             )
+
             temp.Columns.Add(TemplateColumn<BsonItem>("value", "BsonItemValueSelector", GridLength(1, GridUnitType.Star)))
             temp.Columns.Add(new TextColumn<BsonItem, string>("type", (fun b -> b.Type)))
             temp
 
+    let querySw, queryTimer =
+        let sw = Stopwatch.StartNew()
+        //use a long enough interval so that it only shows up for slow queries
+        let temp = new System.Timers.Timer(Interval = 250.0, AutoReset = true)
+        temp.Elapsed |> Observable.add (fun c -> paging.RunInfo <- sw.Elapsed.ToString("mm\:ss\.fff"))
+        sw, temp
+
     let beforeRunSql () =
+        querySw.Restart()
+        queryTimer.Start()
         this.IsBusy <- true
-        cs <- new CancellationTokenSource()
         json <- ""
         this.Error <- ""
+        paging.RunInfo <- ""
         result.Clear()
 
-    let afterRunSql bsonValues (elapsed) =
+    let afterRunSql bsonValues =
+        queryTimer.Stop()
+        querySw.Stop()
         this.IsBusy <- false
+
         Dispatcher.UIThread.Post(fun () ->
             for i in bsonValues do
                 result.Add(BsonItem("result", i, -1, IsExpanded = true))
+
             if (String.IsNullOrEmpty this.Error) then
                 this.ResultDisplayTabIndex <- 0
-                paging.CalculatePages(elapsed)
+                paging.CalculatePages(querySw.Elapsed)
             else
                 //show the Text tab. It has the error message
                 this.ResultDisplayTabIndex <- 1)
 
 
-
-    let runSql (sql: String) =
+    let runSql (sql: String) token =
         try
-            let liteDb = db()
+            let liteDb = db ()
+
             if liteDb = null then
                 failwith "Database is disconnected"
 
-            use reader = exec (db()) sql
-            reader |> readResult cs.Token
+            use reader = exec (db ()) sql
+            reader |> readResult token
         with exc ->
             this.Error <- exc.ToString()
             Seq.empty
 
     let stopCommand =
-        let run () =
-            cs.Cancel()
+        let run () = //TODO.How to cancel a long running litedb query?
             this.IsBusy <- false
+
         ReactiveCommand.Create(run)
 
-    let execute sql =
-        beforeRunSql()
-        (fun () ->
-            let sw = Stopwatch.StartNew()
-            let bsonValues = runSql sql
-            sw.Stop()
-            afterRunSql bsonValues sw.Elapsed)
-        |> Task.Run |> ignore
+    let dispose () =
+        source.Dispose()
+        queryTimer.Dispose()
 
-    let runCommand =
-        ReactiveCommand.Create(fun () ->  execute this.Query  )
+    let execute sql =
+        beforeRunSql ()
+
+        (fun () ->
+            use cs = new CancellationTokenSource()
+            let bsonValues = runSql sql cs.Token
+            afterRunSql bsonValues)
+        |> Task.Run
+        |> ignore
+
+    let runCommand = ReactiveCommand.Create(fun () -> execute this.Query)
 
     let checkpointCommand =
-        let run () = db() |> checkpoint
+        let run () = db () |> checkpoint
         ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
+
     let shrinkCommand =
-        let run () = db() |> shrink
+        let run () = db () |> shrink
         ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
-    let beginCommand =
-        ReactiveCommand.Create(fun() -> execute ("BEGIN"))
-        //ReactiveCommand.Create(fun () -> Async.StartImmediate(runSql ("BEGIN")))
 
-    let rollbackCommand =
-        ReactiveCommand.Create(fun() -> execute ("ROLLBACK"))
-        //ReactiveCommand.Create(fun () -> Async.StartImmediate(runSql ("ROLLBACK")))
+    let beginCommand = ReactiveCommand.Create(fun () -> execute ("BEGIN"))
 
-    let commitCommand =
-        ReactiveCommand.Create(fun () ->(execute ("COMMIT")))
+    let rollbackCommand = ReactiveCommand.Create(fun () -> execute ("ROLLBACK"))
+
+    let commitCommand = ReactiveCommand.Create(fun () -> (execute ("COMMIT")))
 
     let getQueryJson () =
         if (String.IsNullOrEmpty json) then
             if paging.DisplaySource.Count = 1 then
                 json <- result.[0].AsJson()
             elif (paging.DisplaySource.Count > 1) then
-                 seq{ 1..paging.DisplaySource.Count }
-                 |> Seq.zip paging.DisplaySource
-                 |> Seq.fold (fun (acc:StringBuilder) (b,i) -> acc.AppendLine($"// ({i})").AppendLine(b.AsJson())) (StringBuilder())
-                 |> fun sb -> json <- sb.ToString()
+                seq { 1 .. paging.DisplaySource.Count }
+                |> Seq.zip paging.DisplaySource
+                |> Seq.fold (fun (acc: StringBuilder) (b, i) -> acc.AppendLine($"// ({i})").AppendLine(b.AsJson())) (StringBuilder())
+                |> fun sb -> json <- sb.ToString()
             else
                 json <- ""
+
         json
 
-    let getTextDisplay() =
+    let getTextDisplay () =
         if String.IsNullOrEmpty(this.Error) then
-            getQueryJson()
+            getQueryJson ()
         else
             this.Error
 
     member x.Header = $"{Path.GetFileName(dbFile)} - {name}"
     member x.Paging = paging
     member x.CanShowPaging = x.ResultDisplayTabIndex = 0
+
     member x.ResultDisplayTabIndex
         with get () = resultDisplayTabIndex
         and set v =
             let _ = x.RaiseAndSetIfChanged(&resultDisplayTabIndex, v)
             x.RaisePropertyChanged(nameof x.CanShowPaging)
+
             if (resultDisplayTabIndex = 1) then
                 x.RaisePropertyChanged(nameof x.QueryResultText)
+
     member x.IsBusy
         with get () = isBusy
         and set v = x.RaiseAndSetIfChanged(&isBusy, v) |> ignore
@@ -168,4 +188,4 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
     //and set (v) = this.RaiseAndSetIfChanged(&x.json, v) |> ignore
 
     interface IDisposable with
-        member x.Dispose() = source.Dispose()
+        member x.Dispose() = dispose ()

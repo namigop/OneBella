@@ -17,7 +17,7 @@
         </Grid>
         <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
         <Grid Grid.Row="2">
-            <TabControl Grid.Row="2" Grid.Column="2" Background="#1C1D1F" SelectedIndex="{Binding ResultDisplayTabIndex}">
+            <TabControl Grid.Row="2" Grid.Column="2" Background="{StaticResource LdbControlBackground}" SelectedIndex="{Binding ResultDisplayTabIndex}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <DockPanel>
@@ -33,10 +33,10 @@
                                     <view:JsonTextEditor Text="{Binding Value}"></view:JsonTextEditor>
                                 </DataTemplate>
                                 <DataTemplate x:Key="ArrayValue" x:DataType="vm:BsonItem">
-                                    <TextBlock Text="{Binding Value}" FontSize="13" Foreground="DarkGray" VerticalAlignment="Center"></TextBlock>
+                                    <TextBlock Text="{Binding Value}" FontSize="13" Foreground="{StaticResource LdbGrayedOutColor}" VerticalAlignment="Center"></TextBlock>
                                 </DataTemplate>
                                 <DataTemplate x:Key="DocValue" x:DataType="vm:BsonItem">
-                                    <TextBlock Text="{Binding Value}" FontSize="13" Foreground="DarkGray" VerticalAlignment="Center"></TextBlock>
+                                    <TextBlock Text="{Binding Value}" FontSize="13" Foreground="{StaticResource LdbGrayedOutColor}" VerticalAlignment="Center"></TextBlock>
                                 </DataTemplate>
                                 <DataTemplate x:Key="BoolValue" x:DataType="vm:BsonItem">
                                     <!-- <CheckBox IsChecked="{Binding Value}" IsHitTestVisible="False" VerticalAlignment="Center"></CheckBox> -->
@@ -73,7 +73,7 @@
                         </TreeDataGrid.Resources>
                         <TreeDataGrid.Styles>
                             <Style Selector="TreeDataGrid TreeDataGridRow:nth-child(2n)">
-                                <Setter Property="Background" Value="#232426" />
+                                <Setter Property="Background" Value="{StaticResource LdbWindowBackground}" />
                             </Style>
                         </TreeDataGrid.Styles>
                     </TreeDataGrid>
@@ -98,7 +98,7 @@
 
             <!-- paging controls -->
             <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5 10 10 5" ColumnDefinitions="Auto, Auto" IsVisible="{Binding CanShowPaging}">
-                <TextBlock Grid.Column="0" Text="{Binding Paging.RunInfo}" IsVisible="{Binding !IsBusy}" Foreground="DarkGray" FontSize="13"
+                <TextBlock Grid.Column="0" Text="{Binding Paging.RunInfo}" Foreground="{StaticResource LdbGrayedOutColor}" FontSize="13"
                            Margin="0 0 5 0" VerticalAlignment="Center">
                 </TextBlock>
 

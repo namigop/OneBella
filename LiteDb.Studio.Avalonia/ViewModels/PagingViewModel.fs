@@ -10,7 +10,7 @@ open ReactiveUI
 type PagingViewModel(source: ObservableCollection<BsonItem>) =
     inherit ViewModelBase()
 
-    let mutable elapsed = TimeSpan.FromSeconds(0)
+    //let mutable elapsed = TimeSpan.FromSeconds(0)
     let mutable tempSource = source
     let pages = Dictionary<int, (int*int)>()
     let displaySource =
@@ -18,6 +18,7 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
         temp.CollectionChanged |> Observable.add (fun ds -> Console.WriteLine(ds.Action))
         temp
     let mutable pageSize = 50
+    let mutable runInfo = ""
     let mutable currentPage =0
 
     let showPage pageNumber =
@@ -74,11 +75,11 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
         with get () = pageSize
         and set v = x.RaiseAndSetIfChanged(&pageSize, v) |> ignore
     member x.RunInfo
-        with get() =
-            let d = if tempSource.Count = 1 then "document" else "documents"
-            $"{tempSource.Count} {d} : " + elapsed.ToString("mm\:ss\.fff")
+        with get() = runInfo
+        and set v = x.RaiseAndSetIfChanged(&runInfo, v) |> ignore
 
-    member x.CalculatePages(elapsed2:TimeSpan) =
+
+    member x.CalculatePages(elapsed:TimeSpan) =
         pages.Clear()
         tempSource <- source
 
@@ -92,5 +93,5 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
                 pages[kvp.Key] <- kvp.Value
             showPage 0
 
-        elapsed <- elapsed2
-        x.RaisePropertyChanged(nameof x.RunInfo)
+        let d = if tempSource.Count = 1 then "document" else "documents"
+        x.RunInfo <-  $"{tempSource.Count} {d} : " + elapsed.ToString("mm\:ss\.fff")

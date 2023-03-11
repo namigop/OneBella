@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <SyntaxDefinition name="TSQL" extensions=".sql" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-	<Color name="Comment" foreground="#676868" exampleText="-- comment" />
+	<Color name="Comment" foreground="#737A84" exampleText="-- comment" />
 	<Color name="Char" foreground="#6EA8E9" exampleText="name = 'abc'"/>
 	<Color name="Keywords" fontWeight="normal" foreground="#DC635D" exampleText="SELECT FROM"/>
 
