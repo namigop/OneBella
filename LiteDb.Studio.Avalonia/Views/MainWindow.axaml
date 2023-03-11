@@ -37,7 +37,7 @@
                             </Style>
                         </StackPanel.Styles>
                         <!-- add db -->
-                        <Button Click="OpenConnectionWindowCLick">
+                        <Button Click="OpenConnectionWindowCLick" ToolTip.Tip="Connect to a database">
                             <Viewbox>
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{StaticResource LdbTextColor}"
@@ -79,12 +79,11 @@
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <Button Command="{Binding SelectedTab.RunCommand}">
+                            <Button Command="{Binding SelectedTab.RunCommand}" ToolTip.Tip="Run the SQL (F5)">
                                 <Viewbox>
                                     <Canvas Width="24" Height="24">
                                         <Path Fill="White" Data="M8.5,8.64L13.77,12L8.5,15.36V8.64M6.5,5V19L17.5,12" />
                                     </Canvas>
-
                                 </Viewbox>
                             </Button>
                         </StackPanel>

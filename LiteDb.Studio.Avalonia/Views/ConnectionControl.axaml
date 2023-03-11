@@ -81,6 +81,7 @@
         <Border Grid.Row="1" Height="1" Background="{StaticResource LdbControlBackground}" HorizontalAlignment="Stretch"></Border>
 
         <Grid Grid.Row="2" Margin="0 0 0 0 ">
+            <TextBlock Text="{Binding Error}" VerticalAlignment="Center" Foreground="Orange" Margin="50 0 0 0" />
             <Button Height="40" IsEnabled="{Binding CanConnect}"  Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 20 20">
                 <TextBlock Text="connect" VerticalAlignment="Center"></TextBlock>
             </Button>
