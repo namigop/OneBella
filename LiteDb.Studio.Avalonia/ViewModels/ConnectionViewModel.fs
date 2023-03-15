@@ -47,7 +47,7 @@ type ConnectionViewModel(cs:ConnectionString) as this =
 
 
     member x.Close
-        with set (v) = closeFunc <- v
+        with set v = closeFunc <- v
 
 
     member x.CanConnect with get() = not (String.IsNullOrEmpty x.DbFile) && File.Exists(x.DbFile)

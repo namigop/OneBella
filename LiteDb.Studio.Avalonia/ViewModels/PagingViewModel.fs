@@ -12,10 +12,10 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
 
     //let mutable elapsed = TimeSpan.FromSeconds(0)
     let mutable tempSource = source
-    let pages = Dictionary<int, (int*int)>()
+    let pages = Dictionary<int, int*int>()
     let displaySource =
         let temp = ObservableCollection<BsonItem>()
-        temp.CollectionChanged |> Observable.add (fun ds -> Console.WriteLine(ds.Action))
+        //temp.CollectionChanged |> Observable.add (fun ds -> Console.WriteLine(ds.Action))
         temp
     let mutable pageSize = 50
     let mutable runInfo = ""
@@ -24,9 +24,9 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
     let showPage pageNumber =
         if (pages.ContainsKey pageNumber) then
             displaySource.Clear()
-            let (pageStart,pageEnd) = pages[pageNumber]
+            let pageStart,pageEnd = pages[pageNumber]
             for i in pageStart..pageEnd do
-               displaySource.Add (tempSource.[i])
+               displaySource.Add tempSource.[i]
 
     let startPageCommand =
         let run () =
@@ -56,15 +56,18 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
         ReactiveCommand.Create(run)
 
     let tryFlatten (queryResult: ObservableCollection<BsonItem>) =
-       //if the result of the query is a single key with an array, we'll flatten it
-       //  - this is the case for SELECT statements
-       let hasSingleDocResult = queryResult.Count = 1 && queryResult[0].Type = "document"
-       let documentHasSingleArrayChild = Seq.length queryResult[0].Children = 1 && (queryResult[0].Children |> Seq.head).Type = "array"
-       if  hasSingleDocResult && documentHasSingleArrayChild then
-           let docs = queryResult[0].Children |> Seq.head |> (fun f -> f.Children)
-           true, docs
-       else
+       if (queryResult.Count = 0) then
            false, Seq.empty
+       else
+           //if the result of the query is a single key with an array, we'll flatten it
+           //  - this is the case for SELECT statements
+           let hasSingleDocResult = queryResult.Count = 1 && queryResult[0].Type = "document"
+           let documentHasSingleArrayChild = Seq.length queryResult[0].Children = 1 && (queryResult[0].Children |> Seq.head).Type = "array"
+           if  hasSingleDocResult && documentHasSingleArrayChild then
+               let docs = queryResult[0].Children |> Seq.head |> (fun f -> f.Children)
+               true, docs
+           else
+               false, Seq.empty
 
     member x.DisplaySource = displaySource
     member x.EndPageCommand = endPageCommand
@@ -81,6 +84,7 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
 
     member x.CalculatePages(elapsed:TimeSpan) =
         pages.Clear()
+        displaySource.Clear()
         tempSource <- source
 
         let ok,flattened = tryFlatten source

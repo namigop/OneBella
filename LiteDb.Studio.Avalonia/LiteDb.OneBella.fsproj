@@ -23,8 +23,11 @@
         <!--        <NSHighResolutionCapable>true</NSHighResolutionCapable>-->
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="Core\Res.fs" />
+        <Compile Include="Core\Log.fs" />
         <Compile Include="Core\Utils.fs" />
         <Compile Include="Core\DbUtils.fs" />
+        <Compile Include="Core\Rop.fs" />
         <Content Include="..\LICENSE">
           <Link>LICENSE</Link>
         </Content>

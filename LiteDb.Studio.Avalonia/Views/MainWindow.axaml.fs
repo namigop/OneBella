@@ -17,7 +17,7 @@ type MainWindow () as this =
 
     let mutable fly = Unchecked.defaultof<Flyout>
     do this.InitializeComponent()
-    do this.Opened |> Observable.add (fun arg -> this.OpenConnectionWindowCLick(this, null))
+    do this.Opened |> Observable.add (fun _ -> this.OpenConnectionWindowCLick(this, null))
     do this.KeyDown |> Observable.add (fun arg ->
         if (arg.Key = Key.F5) then
             let vm = this.DataContext :?> MainWindowViewModel
@@ -26,7 +26,7 @@ type MainWindow () as this =
                 t.Execute(null)
                 )
 
-    member private x.ScriptTabFlyoutOpened(sender:obj, e:EventArgs) =
+    member private x.ScriptTabFlyoutOpened(sender:obj, _:EventArgs) =
         fly <- sender :?> Flyout
         // fly.Content :?> Border
         // |> fun b -> b.FindControl<Button>("BtnYes")
@@ -34,17 +34,17 @@ type MainWindow () as this =
         //     let main = x.DataContext :?> MainWindowViewModel
         //     b.IsEnabled <- main.Tabs.Count > 1
 
-    member private x.ScriptTabFlyoutClickYes(sender:obj, e:RoutedEventArgs) =
+    member private x.ScriptTabFlyoutClickYes(sender:obj, _:RoutedEventArgs) =
         let main = x.DataContext :?> MainWindowViewModel
         if (main.Tabs.Count > 1)then
             use tab = sender :?> Button |> (fun b -> b.DataContext :?> ScriptViewModel)
             ignore(main.Tabs.Remove tab)
         fly.Hide()
 
-    member private x.ScriptTabFlyoutClickNo(sender:obj, e:RoutedEventArgs) =
+    member private x.ScriptTabFlyoutClickNo(_:obj, _:RoutedEventArgs) =
         fly.Hide()
 
-    member private x.OpenConnectionWindowCLick(send:obj, args:RoutedEventArgs)=
+    member private x.OpenConnectionWindowCLick(_:obj, _:RoutedEventArgs)=
         let rec showAddWindow mainWindow conVm=
             async {
             let w = AddConnectionWindow(conVm)

@@ -13,11 +13,11 @@ let getCultures () =
     |> Seq.toArray
 
 let getCompareOptions () =
-    let names = (Enum.GetNames(typeof<CompareOptions>))
+    let names = Enum.GetNames(typeof<CompareOptions>)
     [| "" |] |> Array.append names
 
 let getPages (pageSize: int) (total: int) =
-    let pages = Dictionary<int, (int * int)>()
+    let pages = Dictionary<int, int * int>()
 
     if (pageSize > total) then
         pages[0] <- (0, total - 1)

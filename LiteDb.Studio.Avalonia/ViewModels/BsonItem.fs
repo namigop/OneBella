@@ -9,7 +9,7 @@ open ReactiveUI
 type BsonItem(name: string, bVal: BsonValue, index :int) =
     inherit ReactiveObject()
     let typeInfo =
-        if (bVal.IsDocument) then
+        if bVal.IsDocument then
             let keyCount = bVal.AsDocument.Keys.Count
             let s = if keyCount > 1 then "fields" else "field"
             "document", $"( {keyCount} {s} )"
@@ -49,7 +49,7 @@ type BsonItem(name: string, bVal: BsonValue, index :int) =
     member x.AsJson() =
         let temp =new List<BsonValue>()
         temp.Add bVal
-        DbUtils.toJson (temp)
+        DbUtils.toJson temp
     member x.Value with get() =
         let _,v = typeInfo
         v
@@ -59,6 +59,6 @@ type BsonItem(name: string, bVal: BsonValue, index :int) =
     member x.Name with get() =
         if (bVal.IsDocument && index > -1) then
             let ok, id = bVal.AsDocument.TryGetValue("_id")
-            if (ok) then $"[{index}] ( id = {id} )" else $"[{index}]"
+            if ok then $"[{index}] ( id = {id} )" else $"[{index}]"
         else
             name

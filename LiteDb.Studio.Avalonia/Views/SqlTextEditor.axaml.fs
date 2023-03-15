@@ -21,7 +21,7 @@ type SqlTextEditor() as this=
         AvaloniaXamlLoader.Load(this)
         let editor = this.FindControl<TextEditor>("Editor")
         editor.Document <- new TextDocument ( Text = "" );
-        editor.TextChanged |> Event.add (fun a -> this.Text <- editor.Text)
+        editor.TextChanged |> Event.add (fun _ -> this.Text <- editor.Text)
         use resource = typeof<SqlTextEditor>.Assembly.GetManifestResourceStream("OneBella.Resources.sql.xshd")
         if not(resource = null) then
            use reader = new XmlTextReader(resource)

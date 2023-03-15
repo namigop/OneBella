@@ -27,9 +27,9 @@ type JsonTextEditor() as this=
         this.foldingTimer <- new DispatcherTimer (Interval = TimeSpan.FromSeconds(2))
         let editor = this.FindControl<TextEditor>("Editor")
         editor.Document <- new TextDocument ( Text = "" );
-        editor.TextChanged |> Event.add (fun a -> this.Text <- editor.Text)
+        editor.TextChanged |> Event.add (fun _ -> this.Text <- editor.Text)
         this.folding <- CharFoldingStrategy('{', '}')
-        this.foldingTimer.Tick |> Observable.add(fun d ->
+        this.foldingTimer.Tick |> Observable.add(fun _ ->
             if (this.foldingManager = null) then
                 this.foldingManager <- FoldingManager.Install(editor.TextArea);
 

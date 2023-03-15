@@ -1,9 +1,7 @@
 namespace OneBella.ViewModels
 
 open System
-open System.Collections.Generic
 open System.Collections.ObjectModel
-open System.ComponentModel
 open System.Diagnostics
 open System.IO
 open System.Text
@@ -13,7 +11,11 @@ open Avalonia.Controls
 open Avalonia.Controls.Models.TreeDataGrid
 open Avalonia.Threading
 open LiteDB
+open Microsoft.FSharp.Core
+open OneBella.Core
+open OneBella.Core.Rop
 open OneBella.Models.DbUtils
+open OneBella.Core.Log
 open Microsoft.FSharp.Control
 open ReactiveUI
 
@@ -22,7 +24,7 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
 
     let mutable resultDisplayTabIndex = 0
     let mutable isBusy = false
-    let mutable err = ""
+    let logSb = StringBuilder()
     let mutable json = ""
     let mutable query = "select * from DocRuleDao"
 
@@ -45,22 +47,31 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
             )
 
             temp.Columns.Add(TemplateColumn<BsonItem>("value", "BsonItemValueSelector", GridLength(1, GridUnitType.Star)))
-            temp.Columns.Add(new TextColumn<BsonItem, string>("type", (fun b -> b.Type)))
+            temp.Columns.Add(TextColumn<BsonItem, string>("type", (fun b -> b.Type)))
             temp
 
     let querySw, queryTimer =
         let sw = Stopwatch.StartNew()
         //use a long enough interval so that it only shows up for slow queries
         let temp = new System.Timers.Timer(Interval = 250.0, AutoReset = true)
-        temp.Elapsed |> Observable.add (fun c -> paging.RunInfo <- sw.Elapsed.ToString("mm\:ss\.fff"))
+
+        temp.Elapsed
+        |> Observable.add (fun _ -> paging.RunInfo <- sw.Elapsed.ToString("mm\:ss\.fff"))
+
         sw, temp
 
+    let info (msg :string)=
+        ignore <| logSb.AppendLine msg
+        logInfo msg
+    let err exc =
+        logExc exc
+        ignore <| logSb.AppendLine (exc.ToString())
     let beforeRunSql () =
         querySw.Restart()
         queryTimer.Start()
         this.IsBusy <- true
         json <- ""
-        this.Error <- ""
+        logSb.Clear()
         paging.RunInfo <- ""
         result.Clear()
 
@@ -73,62 +84,82 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
             for i in bsonValues do
                 result.Add(BsonItem("result", i, -1, IsExpanded = true))
 
-            if (String.IsNullOrEmpty this.Error) then
+            paging.CalculatePages(querySw.Elapsed)
+            if (result.Count > 0) then
                 this.ResultDisplayTabIndex <- 0
-                paging.CalculatePages(querySw.Elapsed)
             else
-                //show the Text tab. It has the error message
+                //show the Text tab. It has the error/log message
                 this.ResultDisplayTabIndex <- 1)
 
 
     let runSql (sql: String) token =
-        try
-            let liteDb = db ()
+        let liteDb = db ()
+        if liteDb = null then
+            failwith "Database is disconnected"
 
-            if liteDb = null then
-                failwith "Database is disconnected"
+        use reader = exec (db ()) sql
+        reader |> readResult token
 
-            use reader = exec (db ()) sql
-            reader |> readResult token
-        with exc ->
-            this.Error <- exc.ToString()
-            Seq.empty
 
     let stopCommand =
         let run () = //TODO.How to cancel a long running litedb query?
             this.IsBusy <- false
-
         ReactiveCommand.Create(run)
 
     let dispose () =
         source.Dispose()
         queryTimer.Dispose()
 
+
     let execute sql =
-        beforeRunSql ()
+        use cs = new CancellationTokenSource()
+        beforeRunSql
+        |> run
+        |> inspect (fun _ -> info $"Executing {sql}") err
+        |> map (fun _ -> runSql sql cs.Token)
+        |> inspect (fun _ -> info $"Done {sql}") err
+        |> tryMapErr (fun _ -> Seq.empty)
+        |> inspect (fun _ -> info $"Showing query results") err
+        |> finish (fun bson -> afterRunSql bson)
 
-        (fun () ->
-            use cs = new CancellationTokenSource()
-            let bsonValues = runSql sql cs.Token
-            afterRunSql bsonValues)
-        |> Task.Run
-        |> ignore
 
-    let runCommand = ReactiveCommand.Create(fun () -> execute this.Query)
+    let runSqlCommand =
+        let run() = execute this.Query
+        ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
     let checkpointCommand =
-        let run () = db () |> checkpoint
-        ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
+        let run() =
+            beforeRunSql
+            |> run
+            |> map (fun _ -> db())
+            |> inspect (fun _ -> info $"Executing db checkpoint") err
+            |> map (fun db -> Async.StartImmediate (checkpoint db))
+            |> inspect (fun _ -> info $"checkpoint done") err
+            |> finish (fun _ -> afterRunSql Seq.empty)
+        ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
     let shrinkCommand =
-        let run () = db () |> shrink
-        ReactiveCommand.Create(fun () -> Async.StartImmediate(run ()))
+        let run() =
+            beforeRunSql
+            |> run
+            |> map (fun _ -> db())
+            |> inspect (fun _ -> info $"Shrinking db") err
+            |> map (fun db -> Async.StartImmediate (shrink db))
+            |> inspect (fun _ -> info $"shrink done") err
+            |> finish (fun _ -> afterRunSql Seq.empty)
+        ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
-    let beginCommand = ReactiveCommand.Create(fun () -> execute ("BEGIN"))
+    let beginCommand =
+        let run() = execute "BEGIN"
+        ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
-    let rollbackCommand = ReactiveCommand.Create(fun () -> execute ("ROLLBACK"))
+    let rollbackCommand =
+        let run() = execute "ROLLBACK"
+        ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
-    let commitCommand = ReactiveCommand.Create(fun () -> (execute ("COMMIT")))
+    let commitCommand =
+        let run() = execute "COMMIT"
+        ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
     let getQueryJson () =
         if (String.IsNullOrEmpty json) then
@@ -145,10 +176,10 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         json
 
     let getTextDisplay () =
-        if String.IsNullOrEmpty(this.Error) then
-            getQueryJson ()
+        if result.Count > 0 then
+            getQueryJson()
         else
-            this.Error
+            logSb.ToString()
 
     member x.Header = $"{Path.GetFileName(dbFile)} - {name}"
     member x.Paging = paging
@@ -167,15 +198,12 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         with get () = isBusy
         and set v = x.RaiseAndSetIfChanged(&isBusy, v) |> ignore
 
-    member x.Error
-        with get () = err
-        and set v = x.RaiseAndSetIfChanged(&err, v) |> ignore
 
     member x.BeginCommand = beginCommand
     member x.ShrinkCommand = shrinkCommand
     member x.RollbackCommand = rollbackCommand
     member x.CommitCommand = commitCommand
-    member x.RunCommand = runCommand
+    member x.RunCommand = runSqlCommand
     member x.StopCommand = stopCommand
     member x.CheckpointCommand = checkpointCommand
     member x.Source = source

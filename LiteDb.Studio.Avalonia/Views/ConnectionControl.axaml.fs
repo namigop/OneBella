@@ -17,7 +17,7 @@ type ConnectionControl() as this =
     member x.VieModel = this.DataContext :?> ConnectionViewModel
 
 
-    member private this.SelectDbFileCLick(send: obj, args: RoutedEventArgs) =
+    member private this.SelectDbFileCLick(_: obj, _: RoutedEventArgs) =
        let run() =
             async {
                 match Application.Current.ApplicationLifetime with

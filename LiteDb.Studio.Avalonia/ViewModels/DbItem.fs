@@ -17,13 +17,13 @@ type DbItem() =
     member x.ContextMenu with get() = contextMenu
     member x.Title
         with get() = title
-        and set(v) =  x.RaiseAndSetIfChanged(&title, v) |> ignore
+        and set v =  x.RaiseAndSetIfChanged(&title, v) |> ignore
     member x.IsExpanded
         with get() = isExpanded
-        and set(v) =  x.RaiseAndSetIfChanged(&isExpanded, v) |> ignore
+        and set v =  x.RaiseAndSetIfChanged(&isExpanded, v) |> ignore
     member x.IsCollection
         with get() = isCollection
-        and set(v) =  x.RaiseAndSetIfChanged(&isCollection, v) |> ignore
+        and set v =  x.RaiseAndSetIfChanged(&isCollection, v) |> ignore
 
     abstract IsConnected : bool
     default x.IsConnected with get() = true
