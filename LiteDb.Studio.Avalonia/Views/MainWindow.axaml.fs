@@ -6,6 +6,7 @@ open Avalonia.Controls
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Interactivity
 open Avalonia.Markup.Xaml
+open OneBella
 open OneBella.ViewModels
 open LiteDB
 open Avalonia.Input
@@ -18,6 +19,13 @@ type MainWindow () as this =
     let mutable fly = Unchecked.defaultof<Flyout>
     do this.InitializeComponent()
     do this.Opened |> Observable.add (fun _ -> this.OpenConnectionWindowCLick(this, null))
+    do this.Closed |> Observable.add (fun _ ->
+         let vm = this.DataContext :?> MainWindowViewModel
+         Repo.disconnect()
+         for d in vm.DbItems do
+            if d.IsConnected then
+               d.Disconnect()
+         )
     do this.KeyDown |> Observable.add (fun arg ->
         if (arg.Key = Key.F5) then
             let vm = this.DataContext :?> MainWindowViewModel
@@ -28,11 +36,6 @@ type MainWindow () as this =
 
     member private x.ScriptTabFlyoutOpened(sender:obj, _:EventArgs) =
         fly <- sender :?> Flyout
-        // fly.Content :?> Border
-        // |> fun b -> b.FindControl<Button>("BtnYes")
-        // |> fun b ->
-        //     let main = x.DataContext :?> MainWindowViewModel
-        //     b.IsEnabled <- main.Tabs.Count > 1
 
     member private x.ScriptTabFlyoutClickYes(sender:obj, _:RoutedEventArgs) =
         let main = x.DataContext :?> MainWindowViewModel
@@ -54,12 +57,13 @@ type MainWindow () as this =
             try
                conVm.Error <- "" 
                vm.Connect(con)
+               ConnectionSettings.create 0 con.DbFile con.IsDirect con.InitSizeInMB con.IsReadOnly con.IsUpgradingFromV4 con.Collation
+               |> Repo.saveConnSettings
             with
             | exc -> 
               let err = exc.Message
               conVm.Error <- err
               do! showAddWindow mainWindow conVm
-              
             }
                 
 
@@ -67,7 +71,9 @@ type MainWindow () as this =
             async {
             match Application.Current.ApplicationLifetime with
             | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-                do! showAddWindow desktop.MainWindow (ConnectionViewModel(ConnectionString()))  
+                let savedConnections = Repo.getConnSettings()
+                let vm =ConnectionViewModel(savedConnections)
+                do! showAddWindow desktop.MainWindow vm
             | _ -> ()
         }
         run() |> Async.StartImmediateAsTask |> ignore

@@ -64,7 +64,8 @@ type MainWindowViewModel()  as this=
 
         if (Seq.length collections) > 0 then
             openNewTab getLiteDb dbFile (Seq.head collections)
-
+        else
+             openNewTab getLiteDb dbFile (Seq.head system.Children).Title
         x.DbItems.Add root
         x.SelectedTab <- scriptTabs[0]
         db <- liteDb

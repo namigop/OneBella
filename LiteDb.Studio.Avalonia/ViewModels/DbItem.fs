@@ -27,3 +27,6 @@ type DbItem() =
 
     abstract IsConnected : bool
     default x.IsConnected with get() = true
+
+    abstract Disconnect : unit -> unit
+    default x.Disconnect() = ()

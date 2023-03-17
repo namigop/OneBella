@@ -3,9 +3,11 @@ namespace OneBella.Models
 open Microsoft.CodeAnalysis
 open LiteDB
 open System
+open OneBella.ConnectionSettings
 
 type ConnectionParameters =
     {
+        Id : int
         DbFile   :string
         Password :string
         IsDirect :bool
@@ -46,4 +48,15 @@ module ConnectionParameters =
 
 type ConnectionParameters with
     member x.ToConnectionString() = ConnectionParameters.buildConString x
-     
+    member x.FromStoredConnection (con : IConnectionSettings) =
+        {
+            Id = con.Id
+            DbFile = con.DbFile
+            Password = ""
+            IsDirect = con.IsDirect
+            IsShared = con.IsShared
+            InitSizeInMB = con.InitSizeInMB
+            IsReadOnly = con.IsReadOnly
+            IsUpgradingFromV4 = con.IsUpgradingFromV4
+            Collation = con.Collation
+        }

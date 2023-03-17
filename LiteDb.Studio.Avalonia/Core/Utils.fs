@@ -3,7 +3,9 @@ module OneBella.Models.Utils
 open System
 open System.Collections.Generic
 open System.Globalization
-
+open System.Runtime.InteropServices
+open System.IO
+let appName = "OneBella"
 let getCultures () =
     CultureInfo.GetCultures(CultureTypes.AllCultures)
     |> Seq.map (fun x -> x.LCID)
@@ -55,3 +57,27 @@ let getScriptName (names: seq<string>) =
         |> Seq.map (fun c -> Convert.ToInt32 c)
         |> Seq.max
         |> (fun n -> $"Script {n + 1}")
+
+let isWindows() = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+let isMac() = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+let isLinux() = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+let getAppDataPath() =
+    let get() =
+        if isWindows() then
+            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
+            |> fun p -> Path.Combine(p, appName)
+        elif isMac() then
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            |> fun p -> Path.Combine(p, appName)
+        else
+             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            |> fun p -> Path.Combine(p, appName)
+
+    get()
+    |> fun d -> Directory.CreateDirectory d
+    |> fun d -> d.FullName
+
+let getTempPath() =
+    Path.Combine(getAppDataPath(), "Temp")
+    |> fun d -> Directory.CreateDirectory d
+    |> fun d -> d.FullName

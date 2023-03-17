@@ -27,7 +27,10 @@
         <Compile Include="Core\Log.fs" />
         <Compile Include="Core\Utils.fs" />
         <Compile Include="Core\DbUtils.fs" />
-        <Compile Include="Core\Rop.fs" />
+        <Compile Include="Repo\IConnectionSettings.fs" />
+        <Compile Include="Repo\Repo.fs" />
+        <Compile Include="Core\Sample_Rop.fs" />
+        <None Include="Core\Sample_Controllers.fs" />
         <Content Include="..\LICENSE">
           <Link>LICENSE</Link>
         </Content>
@@ -56,11 +59,12 @@
         <Compile Include="ViewModels\DbFileItem.fs" />
         <Compile Include="ViewModels\PagingViewModel.fs" />
         <Compile Include="ViewModels\ScriptViewModel.fs" />
+        <Compile Include="ViewModels\ConnectionItem.fs" />
         <Compile Include="ViewModels\ConnectionViewModel.fs" />
         <Compile Include="ViewModels\MainWindowViewModel.fs" />
         <Compile Include="ViewModels\ValueTemplateSelector.fs" />
         <Compile Include="ViewModels\DbItemTemplateSelector.fs" />
-        <Compile Include="Repo\IDbSetup.fs" />
+       
         <Compile Include="Views\ConnectionControl.axaml.fs" />
         <Compile Include="Views\AddConnectionWindow.axaml.fs" />
         <Compile Include="Views\CharFoldingStrategy.fs" />

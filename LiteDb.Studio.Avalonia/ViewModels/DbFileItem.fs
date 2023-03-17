@@ -29,5 +29,6 @@ type DbFileItem(db:LiteDatabase, conString:ConnectionString) as this =
     override x.IsConnected
         with get() = not(liteDb = null)
 
+    override x.Disconnect() = liteDb.Dispose()
     member x.ConnectionString
         with get() = conString

@@ -1,127 +1,78 @@
 namespace OneBella.ViewModels
 
 open System
+open System.Collections.ObjectModel
 open System.IO
 open System.Threading.Tasks
 open LiteDB
 open OneBella.Models
 open ReactiveUI
 open OneBella.Models.Utils
+open OneBella.ConnectionSettings
 
-type ConnectionViewModel(cs:ConnectionString) as this =
+type ConnectionViewModel(savedConnections: IConnectionSettings array)  as this =
     inherit ViewModelBase()
 
     let mutable ts = new TaskCompletionSource<ConnectionParameters>()
-    //let cs = new ConnectionString()
 
-
-    let mutable dbFile = ""
-    let mutable password = ""
-    let mutable isDirect = true
-    let mutable isShared = false
-    let mutable initSizeInMB = 0L
-    let mutable isReadOnly = false
-    let mutable isUpgradingFromV4 = false
     let mutable error = ""
 
-    let mutable selectedCulture =
-        if not (cs.Collation = null) then
-            getCultures () |> Array.find (fun x -> x = cs.Collation.Culture.Name)
-        else
-            ""
 
-    let mutable selectedCompareOption =
-        if not (cs.Collation = null) then
-            getCompareOptions ()
-            |> Array.find (fun x -> x = cs.Collation.SortOptions.ToString())
-        else
-            ""
+    let mutable selectedConItem2 = ConnectionItem(0, ConnectionString())
 
     let mutable closeFunc = fun () -> ()
-
+    let canConnect() =
+        let ok = not (String.IsNullOrEmpty selectedConItem2.DbFile) && File.Exists(selectedConItem2.DbFile)
+        if not ok then
+            this.Error <- "Please select a db file"
+        ok
+    let conItems = ObservableCollection<ConnectionItem>()
+    do
+        savedConnections
+        |> Array.map (fun c ->
+            let cstr = Unchecked.defaultof<ConnectionParameters>.FromStoredConnection (c)
+            ConnectionItem(c.Id, cstr.ToConnectionString()))
+        |> fun items -> ObservableCollection(items)
+        |> fun items ->
+            ConnectionItem(0, ConnectionString(Filename = "<New connection>"))
+            |> fun c -> items.Insert(0, c)
+            for d in items do conItems.Add d
+            selectedConItem2 <- conItems[0]
     let connectCommand =
         let run () =
-            ts.SetResult(this.GetParameters())
-            closeFunc ()
+            if (canConnect()) then
+                let p :ConnectionParameters= selectedConItem2.GetParameters()
+                ts.SetResult(p)
+                closeFunc ()
         ReactiveCommand.Create(run)
+
+    member x.ConnectCommand = connectCommand
+
+
+    member x.SelectFileTask = ts.Task
 
 
     member x.Close
         with set v = closeFunc <- v
 
+    member x.SelectedConnectionItem
+        with get () = selectedConItem2
+        and set v = x.RaiseAndSetIfChanged(&selectedConItem2, v) |> ignore
 
-    member x.CanConnect with get() = not (String.IsNullOrEmpty x.DbFile) && File.Exists(x.DbFile)
-    member x.CompareOptions = getCompareOptions ()
-    member x.Cultures = getCultures ()
-
-    member x.SelectedCulture
-        with get () = selectedCulture
-        and set v = x.RaiseAndSetIfChanged(&selectedCulture, v) |> ignore
+    member x.ConnectionItems = conItems
+    member x.CanConnect
+        with get() =
+            let a =  not (String.IsNullOrEmpty x.SelectedConnectionItem.DbFile)
+            let b = File.Exists(x.SelectedConnectionItem.DbFile)
+            a && b
 
     member x.Error
         with get () = error
-        and set v = 
+        and set v =
             x.RaiseAndSetIfChanged(&error, v) |> ignore
             ts <- TaskCompletionSource<ConnectionParameters>()
 
-    member x.SelectedCompareOption
-        with get () = selectedCompareOption
-        and set v = x.RaiseAndSetIfChanged(&selectedCompareOption, v) |> ignore
-
-
-    member x.ConnectCommand = connectCommand
-
-    member x.DbFile
-        with get () = dbFile
-        and set v =
-            x.RaiseAndSetIfChanged(&dbFile, v) |> ignore
-            x.RaisePropertyChanged(nameof x.CanConnect)
-
-    member x.Password
-        with get () = password
-        and set v = x.RaiseAndSetIfChanged(&password, v) |> ignore
-
-    member x.IsDirect
-        with get () = isDirect
-        and set v = x.RaiseAndSetIfChanged(&isDirect, v) |> ignore
-
-    member x.IsShared
-        with get () = isShared
-        and set v = x.RaiseAndSetIfChanged(&isShared, v) |> ignore
-
-    member x.IsReadOnly
-        with get () = isReadOnly
-        and set v = x.RaiseAndSetIfChanged(&isReadOnly, v) |> ignore
-
-    member x.InitSizeInMB
-        with get () = initSizeInMB
-        and set v = x.RaiseAndSetIfChanged(&initSizeInMB, v) |> ignore
-
-    member x.IsUpgradingFromV4
-        with get () = isUpgradingFromV4
-        and set v = x.RaiseAndSetIfChanged(&isUpgradingFromV4, v) |> ignore
-
-    member x.SelectFileTask = ts.Task
 
     member x.Set(result: string[]) =
-        if not(result =null) && (result.Length > 0) then
-            x.DbFile <- result[0]
-
-    member x.GetParameters() : ConnectionParameters =
-        let collation =
-            if not <| String.IsNullOrWhiteSpace(selectedCulture) && not <| String.IsNullOrWhiteSpace(selectedCompareOption) then
-                $"{selectedCulture}/{selectedCompareOption}"
-            elif not <| String.IsNullOrWhiteSpace(selectedCulture) then
-                selectedCulture
-            else
-                ""
-        {
-          DbFile = x.DbFile
-          Password = x.Password
-          IsDirect = x.IsDirect
-          IsShared = x.IsShared
-          InitSizeInMB = x.InitSizeInMB
-          IsReadOnly = x.IsReadOnly
-          IsUpgradingFromV4 = x.IsUpgradingFromV4
-          Collation = collation
-          }
+        if not (result = null) && (result.Length > 0) then
+             x.SelectedConnectionItem.DbFile <- result[0]

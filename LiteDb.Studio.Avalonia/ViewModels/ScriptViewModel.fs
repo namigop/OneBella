@@ -12,8 +12,8 @@ open Avalonia.Controls.Models.TreeDataGrid
 open Avalonia.Threading
 open LiteDB
 open Microsoft.FSharp.Core
-open OneBella.Core
 open OneBella.Core.Rop
+
 open OneBella.Models.DbUtils
 open OneBella.Core.Log
 open Microsoft.FSharp.Control
@@ -71,7 +71,7 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         queryTimer.Start()
         this.IsBusy <- true
         json <- ""
-        logSb.Clear()
+        logSb.Clear() |> ignore
         paging.RunInfo <- ""
         result.Clear()
 
@@ -115,12 +115,12 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         use cs = new CancellationTokenSource()
         beforeRunSql
         |> run
-        |> inspect (fun _ -> info $"Executing {sql}") err
-        |> map (fun _ -> runSql sql cs.Token)
-        |> inspect (fun _ -> info $"Done {sql}") err
+        |> inspect   (fun _ -> info $"Executing {sql}") err
+        |> map       (fun _ -> runSql sql cs.Token)
+        |> inspect   (fun _ -> info $"Done {sql}") err
         |> tryMapErr (fun _ -> Seq.empty)
-        |> inspect (fun _ -> info $"Showing query results") err
-        |> finish (fun bson -> afterRunSql bson)
+        |> inspect   (fun _ -> info $"Showing query results") err
+        |> finish    (fun bson -> afterRunSql bson)
 
 
     let runSqlCommand =
@@ -131,22 +131,22 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         let run() =
             beforeRunSql
             |> run
-            |> map (fun _ -> db())
+            |> map     (fun _ -> db())
             |> inspect (fun _ -> info $"Executing db checkpoint") err
-            |> map (fun db -> Async.StartImmediate (checkpoint db))
+            |> map     (fun db -> Async.StartImmediate (checkpoint db))
             |> inspect (fun _ -> info $"checkpoint done") err
-            |> finish (fun _ -> afterRunSql Seq.empty)
+            |> finish  (fun _ -> afterRunSql Seq.empty)
         ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
     let shrinkCommand =
         let run() =
             beforeRunSql
             |> run
-            |> map (fun _ -> db())
+            |> map     (fun _ -> db())
             |> inspect (fun _ -> info $"Shrinking db") err
-            |> map (fun db -> Async.StartImmediate (shrink db))
+            |> map     (fun db -> Async.StartImmediate (shrink db))
             |> inspect (fun _ -> info $"shrink done") err
-            |> finish (fun _ -> afterRunSql Seq.empty)
+            |> finish  (fun _ -> afterRunSql Seq.empty)
         ReactiveCommand.Create(fun () -> ignore(Task.Run run) )
 
     let beginCommand =
@@ -168,7 +168,8 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
             elif (paging.DisplaySource.Count > 1) then
                 seq { 1 .. paging.DisplaySource.Count }
                 |> Seq.zip paging.DisplaySource
-                |> Seq.fold (fun (acc: StringBuilder) (b, i) -> acc.AppendLine($"// ({i})").AppendLine(b.AsJson())) (StringBuilder())
+                |> Seq.fold (fun (acc: StringBuilder) (b, i) ->
+                    acc.AppendLine($"// ({i})").AppendLine(b.AsJson())) (StringBuilder())
                 |> fun sb -> json <- sb.ToString()
             else
                 json <- ""

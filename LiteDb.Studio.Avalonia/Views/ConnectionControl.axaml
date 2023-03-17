@@ -49,27 +49,33 @@
                         <TextBlock Grid.Column="0" Grid.Row="4" Text="mode"></TextBlock>
 
                       <StackPanel Orientation="Horizontal"  Grid.Column="1" Grid.Row="4">
-                        <RadioButton GroupName="ABC" Content="direct" IsChecked="{Binding IsDirect}" Margin="5"></RadioButton>
-                        <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding IsShared}" Margin="5"></RadioButton>
+                        <RadioButton GroupName="ABC" Content="direct" IsChecked="{Binding SelectedConnectionItem.IsDirect}" Margin="5"></RadioButton>
+                        <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding SelectedConnectionItem.IsShared}" Margin="5"></RadioButton>
                       </StackPanel>
                       
                        <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" Content="read only"
-                                  IsChecked="{Binding IsReadOnly}"></CheckBox>
+                                  IsChecked="{Binding SelectedConnectionItem.IsReadOnly}"></CheckBox>
                         <CheckBox Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2"
-                                  IsChecked="{Binding IsUpgradingFromV4}"
+                                  IsChecked="{Binding SelectedConnectionItem.IsUpgradingFromV4}"
                                   Content="upgrade from LiteDB v4 (if needed)"></CheckBox>
 
                         <DockPanel Grid.Column="1" Grid.Row="0">
-                            
-                            <TextBox Text="{Binding DbFile}"></TextBox>
+                        <ComboBox Items="{Binding ConnectionItems}" SelectedItem="{Binding SelectedConnectionItem}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding DbFile}"></TextBox>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
                         </DockPanel>
                       <Button  Grid.Column="1" Grid.Row="0"  Content="..." Click="SelectDbFileCLick" Margin="0 0 5 0" HorizontalAlignment="Right"></Button>
-                        <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding Password}" PasswordChar="*" Margin="5"></TextBox>
-                        <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5" Value="{Binding InitSizeInMB}"></NumericUpDown>
+                        <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding SelectedConnectionItem.Password}" PasswordChar="*" Margin="5"></TextBox>
+                        <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5" Value="{Binding SelectedConnectionItem.InitSizeInMB}"></NumericUpDown>
                         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="5">
-                            <ComboBox Items="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" MinWidth="80"></ComboBox>
+                            <ComboBox Items="{Binding SelectedConnectionItem.Cultures}" SelectedItem="{Binding SelectedConnectionItem.SelectedCulture}" MinWidth="80"></ComboBox>
                             <TextBlock Text="/" Margin="5"></TextBlock>
-                            <ComboBox Items="{Binding CompareOptions}" SelectedItem="{Binding SelectedCompareOption}" MinWidth="80"></ComboBox>
+                            <ComboBox Items="{Binding SelectedConnectionItem.CompareOptions}" SelectedItem="{Binding SelectedConnectionItem.SelectedCompareOption}" MinWidth="80"></ComboBox>
                         </StackPanel>
 
                     </Grid>
@@ -82,7 +88,7 @@
 
         <Grid Grid.Row="2" Margin="0 0 0 0 ">
             <TextBlock Text="{Binding Error}" VerticalAlignment="Center" Foreground="Orange" Margin="50 0 0 0" />
-            <Button Height="40" IsEnabled="{Binding CanConnect}"  Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 20 20">
+            <Button Height="40"    Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 20 20">
                 <TextBlock Text="connect" VerticalAlignment="Center"></TextBlock>
             </Button>
         </Grid>

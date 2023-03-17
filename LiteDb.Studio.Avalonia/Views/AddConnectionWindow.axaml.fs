@@ -16,10 +16,9 @@ type AddConnectionWindow(conVm:ConnectionViewModel) as this=
         c.DataContext <- conVm
         c.VieModel.Close <- (fun() -> this.Close())
 
-    new() = AddConnectionWindow(ConnectionViewModel(ConnectionString()))
+    new() = AddConnectionWindow(ConnectionViewModel(Array.empty))
 
     member x.SelectFileTask
         with get() =
             let c = this.FindControl<ConnectionControl>("ConnectionControl")
             c.VieModel.SelectFileTask
-   
