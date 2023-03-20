@@ -4,8 +4,9 @@ open System
 open System.Collections.ObjectModel
 open System.IO
 open LiteDB
+open OneBella.Core
 open OneBella.Models
-open OneBella.Models.DbUtils
+open OneBella.Core.DbUtils
 open OneBella.Models.Utils
 open ReactiveUI
 
@@ -30,18 +31,24 @@ type MainWindowViewModel()  as this=
         temp.ContextMenu.Add(newTabAction)
 
         temp
+    let openNewTabCommand =
+        let run() =
+            let root :DbItem = this.DbItems |> Seq.head
+            let f = root :?> DbFileItem
+            openNewTab (fun () -> f.LiteDb) f.ConnectionString.Filename "<Todo>"
+        ReactiveCommand.Create(run)
 
-
-    member val DbItems = new ObservableCollection<DbItem>()
+    member x.OpenNewTabCommand = openNewTabCommand
+    member val DbItems = ObservableCollection<DbItem>()
     member x.Tabs with get() = scriptTabs
     member x.SelectedTab
         with get() = selectedTab
         and set v = x.RaiseAndSetIfChanged(&selectedTab, v) |> ignore
 
 
-    member x.Connect(con: ConnectionParameters) =
+    member x.Connect(con: ConnParamType) =
         let dbFile = con.DbFile
-        let conString = con.ToConnectionString()
+        let conString = ConnectionParameters.buildConString con
         
         let liteDb =  getDb conString
 

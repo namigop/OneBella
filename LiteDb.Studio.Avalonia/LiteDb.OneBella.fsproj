@@ -23,21 +23,24 @@
         <!--        <NSHighResolutionCapable>true</NSHighResolutionCapable>-->
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Core\Res.fs" />
-        <Compile Include="Core\Log.fs" />
-        <Compile Include="Core\Utils.fs" />
+        <Compile Include="Infra\Log.fs" />
+        <Compile Include="Infra\Utils.fs" />
+        <Compile Include="Infra\Res.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Core\IConnectionSettings.fs" />
+        <Compile Include="Core\ConnectionParameters.fs" />
         <Compile Include="Core\DbUtils.fs" />
-        <Compile Include="Repo\IConnectionSettings.fs" />
-        <Compile Include="Repo\Repo.fs" />
-        <Compile Include="Core\Sample_Rop.fs" />
+        <None Include="Core\Sample_Rop.fs" />
         <None Include="Core\Sample_Controllers.fs" />
-        <Content Include="..\LICENSE">
-          <Link>LICENSE</Link>
-        </Content>
-        <Content Include="..\README.md">
-          <Link>README.md</Link>
-        </Content>
-        <Folder Include="Models\" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="UseCases\RunSql.fs" />
+        <Compile Include="UseCases\StoredConn.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="Repo\Repo.fs" />
         <AvaloniaResource Include="Assets\**" />
         <EmbeddedResource Include="Resources\json.xshd" />
         <EmbeddedResource Include="Resources\sql.xshd" />
@@ -48,9 +51,6 @@
         </None>
         <Content Include="Resources\ldb.ico" />
         <None Remove=".gitignore" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="Models\ConnectionParameters.fs" />
         <Compile Include="Models\SqlRun.fs" />
         <Compile Include="ViewModels\ViewModelBase.fs" />
         <Compile Include="ViewModels\BsonItem.fs" />
@@ -75,6 +75,12 @@
         <Compile Include="ViewLocator.fs" />
         <Compile Include="App.axaml.fs" />
         <Compile Include="Program.fs" />
+        <Content Include="..\README.md">
+          <Link>README.md</Link>
+        </Content>
+        <Content Include="..\LICENSE">
+          <Link>LICENSE</Link>
+        </Content>
 
     </ItemGroup>
     <ItemGroup>
@@ -96,4 +102,5 @@
         <PackageReference Include="DotNet.Bundle" Version="0.9.13" />
         <PackageReference Include="LiteDB" Version="5.0.15" />
     </ItemGroup>
+   
 </Project>

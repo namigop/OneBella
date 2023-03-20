@@ -1,4 +1,4 @@
-module OneBella.Models.DbUtils
+module OneBella.Core.DbUtils
 
 open System.IO
 open System.Text
@@ -55,4 +55,3 @@ let getSystemTables (db: LiteDatabase) =
         .ToDocuments()
 
 let getCollectionNames (db: LiteDatabase) = db.GetCollectionNames() |> Seq.sort
-

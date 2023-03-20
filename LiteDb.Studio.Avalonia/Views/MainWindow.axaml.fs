@@ -7,6 +7,7 @@ open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Interactivity
 open Avalonia.Markup.Xaml
 open OneBella
+open OneBella.UseCases
 open OneBella.ViewModels
 open LiteDB
 open Avalonia.Input
@@ -57,8 +58,9 @@ type MainWindow () as this =
             try
                conVm.Error <- "" 
                vm.Connect(con)
-               ConnectionSettings.create 0 con.DbFile con.IsDirect con.InitSizeInMB con.IsReadOnly con.IsUpgradingFromV4 con.Collation
-               |> Repo.saveConnSettings
+               StoredConnUseCase.create Repo.getDb
+               |> StoredConnUseCase.save con
+
             with
             | exc -> 
               let err = exc.Message
@@ -71,8 +73,10 @@ type MainWindow () as this =
             async {
             match Application.Current.ApplicationLifetime with
             | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-                let savedConnections = Repo.getConnSettings()
-                let vm =ConnectionViewModel(savedConnections)
+                //let savedConnections = Repo.getConnSettings()
+                let uc =StoredConnUseCase.create Repo.getDb
+                let p = StoredConnUseCase.loadAll uc |> Seq.toArray
+                let vm =ConnectionViewModel(p)
                 do! showAddWindow desktop.MainWindow vm
             | _ -> ()
         }

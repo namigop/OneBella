@@ -5,45 +5,49 @@ open System.Collections.ObjectModel
 open System.IO
 open System.Threading.Tasks
 open LiteDB
+open OneBella.Core
 open OneBella.Models
 open ReactiveUI
 open OneBella.Models.Utils
 open OneBella.ConnectionSettings
 
-type ConnectionViewModel(savedConnections: IConnectionSettings array)  as this =
+type ConnectionViewModel(savedConnections: ConnParamType array)  as this =
     inherit ViewModelBase()
 
-    let mutable ts = new TaskCompletionSource<ConnectionParameters>()
-
+    let mutable ts = new TaskCompletionSource<ConnParamType>()
     let mutable error = ""
 
 
-    let mutable selectedConItem2 = ConnectionItem(0, ConnectionString())
-
     let mutable closeFunc = fun () -> ()
+
+    let conItems = ObservableCollection<ConnectionItem>()
+    let mutable selectedConItem2 = ConnectionItem(0, ConnectionString(), conItems)
     let canConnect() =
         let ok = not (String.IsNullOrEmpty selectedConItem2.DbFile) && File.Exists(selectedConItem2.DbFile)
         if not ok then
             this.Error <- "Please select a db file"
         ok
-    let conItems = ObservableCollection<ConnectionItem>()
+
     do
         savedConnections
         |> Array.map (fun c ->
-            let cstr = Unchecked.defaultof<ConnectionParameters>.FromStoredConnection (c)
-            ConnectionItem(c.Id, cstr.ToConnectionString()))
+            let cstr = ConnectionParameters.buildConString c
+            ConnectionItem(c.Id, cstr, conItems))
         |> fun items -> ObservableCollection(items)
         |> fun items ->
-            ConnectionItem(0, ConnectionString(Filename = "<New connection>"))
+            ConnectionItem(0, ConnectionString(Filename = "<Select a db file>"), conItems, CanDelete=false)
             |> fun c -> items.Insert(0, c)
             for d in items do conItems.Add d
             selectedConItem2 <- conItems[0]
+
+
     let connectCommand =
         let run () =
             if (canConnect()) then
-                let p :ConnectionParameters= selectedConItem2.GetParameters()
-                ts.SetResult(p)
-                closeFunc ()
+
+                selectedConItem2.GetParameters()
+                |> ts.SetResult
+                |> closeFunc
         ReactiveCommand.Create(run)
 
     member x.ConnectCommand = connectCommand
@@ -70,9 +74,20 @@ type ConnectionViewModel(savedConnections: IConnectionSettings array)  as this =
         with get () = error
         and set v =
             x.RaiseAndSetIfChanged(&error, v) |> ignore
-            ts <- TaskCompletionSource<ConnectionParameters>()
+            ts <- TaskCompletionSource<ConnParamType>()
 
 
     member x.Set(result: string[]) =
         if not (result = null) && (result.Length > 0) then
-             x.SelectedConnectionItem.DbFile <- result[0]
+             conItems
+             |> Seq.tryFind (fun d -> d.DbFile = result[0])
+             |> fun e ->
+                 match e with
+                 | Some(d) -> x.SelectedConnectionItem <- d
+                 | None ->
+                     let connParams = x.SelectedConnectionItem.GetParameters()
+                     connParams.DbFile <- result[0]
+                     let cs = ConnectionParameters.buildConString connParams
+                     let c = ConnectionItem(0, cs, conItems)
+                     conItems.Add c
+                     x.SelectedConnectionItem <- c

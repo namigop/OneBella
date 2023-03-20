@@ -5,6 +5,7 @@ open OneBella.Models
 open OneBella.ConnectionSettings
 let private db = new LiteDatabase(Utils.getAppDataPath() + $"/{Utils.appName}.db")
 
+let getDb() = db
 let getConnSettings() =
     let c = db.GetCollection<IConnectionSettings>()
     let _ = c.EnsureIndex(fun r -> r.Id)

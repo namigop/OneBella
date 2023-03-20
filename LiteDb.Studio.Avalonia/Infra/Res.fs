@@ -45,6 +45,8 @@ let inspect onOk onFailed (res: Res<'S>) =
     with exc ->
         failed exc
 
+let log = inspect
+
 let map (fn: 'S -> 'T) (res: Res<'S>) =
     if res.IsValid then
         try

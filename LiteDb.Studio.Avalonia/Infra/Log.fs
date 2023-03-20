@@ -1,4 +1,4 @@
-module OneBella.Core.Log
+module OneBella.Infra.Log
 
 open System
 

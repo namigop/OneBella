@@ -14,10 +14,11 @@ open LiteDB
 open Microsoft.FSharp.Core
 open OneBella.Core.Rop
 
-open OneBella.Models.DbUtils
-open OneBella.Core.Log
+open OneBella.Core.DbUtils
+open OneBella.Infra.Log
 open Microsoft.FSharp.Control
 open ReactiveUI
+open OneBella.UseCases
 
 type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as this =
     inherit ViewModelBase()
@@ -66,6 +67,7 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
     let err exc =
         logExc exc
         ignore <| logSb.AppendLine (exc.ToString())
+
     let beforeRunSql () =
         querySw.Restart()
         queryTimer.Start()
@@ -81,24 +83,27 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         this.IsBusy <- false
 
         Dispatcher.UIThread.Post(fun () ->
-            for i in bsonValues do
-                result.Add(BsonItem("result", i, -1, IsExpanded = true))
+            if not (bsonValues = null)  then
+                for i in bsonValues do
+                    result.Add(BsonItem("result", i, -1, IsExpanded = true))
 
-            paging.CalculatePages(querySw.Elapsed)
-            if (result.Count > 0) then
-                this.ResultDisplayTabIndex <- 0
-            else
-                //show the Text tab. It has the error/log message
-                this.ResultDisplayTabIndex <- 1)
+                paging.CalculatePages(querySw.Elapsed)
+                if (result.Count > 0) then
+                    this.ResultDisplayTabIndex <- 0
+                else
+                    //show the Text tab. It has the error/log message
+                    this.ResultDisplayTabIndex <- 1)
 
 
     let runSql (sql: String) token =
-        let liteDb = db ()
-        if liteDb = null then
-            failwith "Database is disconnected"
-
-        use reader = exec (db ()) sql
-        reader |> readResult token
+        let uc = RunSql.create querySw sql db token
+        RunSql.run uc
+        // let liteDb = db ()
+        // if liteDb = null then
+        //     failwith "Database is disconnected"
+        //
+        // use reader = exec (db ()) sql
+        // reader |> readResult token
 
 
     let stopCommand =
@@ -115,12 +120,12 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         use cs = new CancellationTokenSource()
         beforeRunSql
         |> run
-        |> inspect   (fun _ -> info $"Executing {sql}") err
+        |> log       (fun _ -> info $"Executing {sql}") err
         |> map       (fun _ -> runSql sql cs.Token)
-        |> inspect   (fun _ -> info $"Done {sql}") err
-        |> tryMapErr (fun _ -> Seq.empty)
-        |> inspect   (fun _ -> info $"Showing query results") err
-        |> finish    (fun bson -> afterRunSql bson)
+        |> log       (fun b -> info $"Done {sql}") err
+        |> tryMapErr (fun j -> ok Array.empty)
+        |> log       (fun _ -> info $"Showing query results") err
+        |> finish    (fun bson -> afterRunSql bson.Value)
 
 
     let runSqlCommand =

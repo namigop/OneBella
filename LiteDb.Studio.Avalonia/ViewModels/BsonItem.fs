@@ -3,7 +3,7 @@ namespace OneBella.ViewModels
 open System
 open System.Collections.Generic
 open LiteDB
-open OneBella.Models
+open OneBella.Core
 open ReactiveUI
 
 type BsonItem(name: string, bVal: BsonValue, index :int) =

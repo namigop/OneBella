@@ -1,15 +1,21 @@
 namespace OneBella.ViewModels
 
 open System
+open System.Collections.ObjectModel
 open System.IO
 open System.Threading.Tasks
 open LiteDB
+open OneBella
+open OneBella.Core
 open OneBella.Models
+open OneBella.UseCases
 open ReactiveUI
 open OneBella.Models.Utils
-type ConnectionItem(id, cs:ConnectionString) =
+
+type ConnectionItem(id, cs:ConnectionString, parent:ObservableCollection<ConnectionItem>) as this=
     inherit ViewModelBase()
 
+    let mutable canDelete = true
     let mutable dbFile = cs.Filename
     let mutable password = ""
     let mutable isDirect = cs.Connection = ConnectionType.Direct
@@ -31,8 +37,16 @@ type ConnectionItem(id, cs:ConnectionString) =
         else
             ""
 
+    let deleteConnectionCommand =
+        let run() =
+            if (id > 0 ) then
+                StoredConnUseCase.deleteById id {Db = Repo.getDb}
+                parent.Remove(this) |> ignore
+
+        ReactiveCommand.Create(run )
 
 
+    member x.DeleteConnectionCommand = deleteConnectionCommand
     member x.CompareOptions = getCompareOptions ()
     member x.Cultures = getCultures ()
 
@@ -51,6 +65,9 @@ type ConnectionItem(id, cs:ConnectionString) =
         and set v =
             x.RaiseAndSetIfChanged(&dbFile, v) |> ignore
 
+    member x.CanDelete
+        with get() = canDelete
+        and set v = x.RaiseAndSetIfChanged(&canDelete, v) |> ignore
 
     member x.Password
         with get () = password
@@ -76,7 +93,7 @@ type ConnectionItem(id, cs:ConnectionString) =
         with get () = isUpgradingFromV4
         and set v = x.RaiseAndSetIfChanged(&isUpgradingFromV4, v) |> ignore
 
-    member x.GetParameters() : ConnectionParameters =
+    member x.GetParameters() : ConnParamType=
         let collation =
             if not <| String.IsNullOrWhiteSpace(selectedCulture) && not <| String.IsNullOrWhiteSpace(selectedCompareOption) then
                 $"{selectedCulture}/{selectedCompareOption}"
@@ -84,14 +101,14 @@ type ConnectionItem(id, cs:ConnectionString) =
                 selectedCulture
             else
                 ""
-        {
-          Id = id
-          DbFile = x.DbFile
-          Password = x.Password
-          IsDirect = x.IsDirect
-          IsShared = x.IsShared
-          InitSizeInMB = x.InitSizeInMB
-          IsReadOnly = x.IsReadOnly
-          IsUpgradingFromV4 = x.IsUpgradingFromV4
-          Collation = collation
-          }
+        let c= ConnParamType()
+        c.Id <- id
+        c.DbFile <- x.DbFile
+        c.Password <- x.Password
+        c.IsDirect <- x.IsDirect
+        c.IsShared <- x.IsShared
+        c.InitSizeInMB <- x.InitSizeInMB
+        c.IsReadOnly <- x.IsReadOnly
+        c.IsUpgradingFromV4 <- x.IsUpgradingFromV4
+        c.Collation <- collation
+        c

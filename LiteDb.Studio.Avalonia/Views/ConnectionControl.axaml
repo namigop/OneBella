@@ -11,7 +11,7 @@
 
     <Grid Margin="0 30 0 0" RowDefinitions="*, Auto, Auto">
         <StackPanel Orientation="Vertical" Grid.Row="0" Margin="30 0 30 0">
-            <TextBlock Text="Connect to database" FontSize="20" HorizontalAlignment="Center" ></TextBlock>
+            <TextBlock Text="Connect to database" FontSize="20" HorizontalAlignment="Center"></TextBlock>
             <!--<Grid>
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="H1" Text="connection mode" Margin="0 10 0 10"></TextBlock>
@@ -24,7 +24,7 @@
 
             <Grid Margin="0 30 0 0">
                 <StackPanel Orientation="Vertical">
-                    
+
                     <Grid ColumnDefinitions="Auto,*, Auto" RowDefinitions="Auto, Auto, Auto,Auto,Auto, Auto, Auto">
                         <Grid.Styles>
                             <Style Selector="TextBlock">
@@ -48,29 +48,53 @@
                         <TextBlock Grid.Column="0" Grid.Row="3" Text="collation"></TextBlock>
                         <TextBlock Grid.Column="0" Grid.Row="4" Text="mode"></TextBlock>
 
-                      <StackPanel Orientation="Horizontal"  Grid.Column="1" Grid.Row="4">
-                        <RadioButton GroupName="ABC" Content="direct" IsChecked="{Binding SelectedConnectionItem.IsDirect}" Margin="5"></RadioButton>
-                        <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding SelectedConnectionItem.IsShared}" Margin="5"></RadioButton>
-                      </StackPanel>
-                      
-                       <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" Content="read only"
-                                  IsChecked="{Binding SelectedConnectionItem.IsReadOnly}"></CheckBox>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="4">
+                            <RadioButton GroupName="ABC" Content="direct" IsChecked="{Binding SelectedConnectionItem.IsDirect}" Margin="5"></RadioButton>
+                            <RadioButton GroupName="ABC" Content="shared" IsChecked="{Binding SelectedConnectionItem.IsShared}" Margin="5"></RadioButton>
+                        </StackPanel>
+
+                        <CheckBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" Content="read only"
+                                  IsChecked="{Binding SelectedConnectionItem.IsReadOnly}">
+                        </CheckBox>
                         <CheckBox Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2"
                                   IsChecked="{Binding SelectedConnectionItem.IsUpgradingFromV4}"
-                                  Content="upgrade from LiteDB v4 (if needed)"></CheckBox>
+                                  Content="upgrade from LiteDB v4 (if needed)">
+                        </CheckBox>
 
                         <DockPanel Grid.Column="1" Grid.Row="0">
-                        <ComboBox Items="{Binding ConnectionItems}" SelectedItem="{Binding SelectedConnectionItem}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding DbFile}"></TextBox>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                            <ComboBox Padding="5 2 2 2" HorizontalAlignment="Stretch" Margin="5 0 5 0" Items="{Binding ConnectionItems}" SelectedItem="{Binding SelectedConnectionItem}">
+                                <ComboBox.Styles>
+                                    <Style Selector="ComboBox /template/ ContentControl#ContentPresenter > Grid > Button:nth-child(2)">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </Style>
+                                </ComboBox.Styles>
+
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*, Auto">
+                                            <TextBlock Grid.Column="0" Text="{Binding DbFile}" FontSize="13" HorizontalAlignment="Left" />
+                                            <Button Grid.Column="1" Background="Transparent" IsEnabled="{Binding CanDelete}" Command="{Binding DeleteConnectionCommand}">
+                                                <Viewbox Height="16" Width="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="Gray" Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <!-- <ComboBox.ItemTemplate> -->
+                                <!--     <DataTemplate> -->
+                                <!--         <TextBlock VerticalAlignment="Center" Padding="0" Text="{Binding DbFile}"></TextBlock> -->
+                                <!--     </DataTemplate> -->
+                                <!-- </ComboBox.ItemTemplate> -->
+                            </ComboBox>
 
                         </DockPanel>
-                      <Button  Grid.Column="1" Grid.Row="0"  Content="..." Click="SelectDbFileCLick" Margin="0 0 5 0" HorizontalAlignment="Right"></Button>
-                        <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding SelectedConnectionItem.Password}" PasswordChar="*" Margin="5"></TextBox>
+                        <Button Grid.Column="2" Grid.Row="0"  Content="..." Click="SelectDbFileCLick" Margin="0 0 5 0" HorizontalAlignment="Right">
+
+                        </Button>
+                        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding SelectedConnectionItem.Password}" PasswordChar="*" Margin="5"></TextBox>
                         <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5" Value="{Binding SelectedConnectionItem.InitSizeInMB}"></NumericUpDown>
                         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="5">
                             <ComboBox Items="{Binding SelectedConnectionItem.Cultures}" SelectedItem="{Binding SelectedConnectionItem.SelectedCulture}" MinWidth="80"></ComboBox>
@@ -88,7 +112,7 @@
 
         <Grid Grid.Row="2" Margin="0 0 0 0 ">
             <TextBlock Text="{Binding Error}" VerticalAlignment="Center" Foreground="Orange" Margin="50 0 0 0" />
-            <Button Height="40"    Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 20 20">
+            <Button Height="40" Command="{Binding ConnectCommand}" HorizontalAlignment="Right" Margin="5 15 20 20">
                 <TextBlock Text="connect" VerticalAlignment="Center"></TextBlock>
             </Button>
         </Grid>
