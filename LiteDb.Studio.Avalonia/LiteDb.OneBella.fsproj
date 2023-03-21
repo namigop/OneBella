@@ -28,11 +28,8 @@
         <Compile Include="Infra\Res.fs" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Core\IConnectionSettings.fs" />
         <Compile Include="Core\ConnectionParameters.fs" />
         <Compile Include="Core\DbUtils.fs" />
-        <None Include="Core\Sample_Rop.fs" />
-        <None Include="Core\Sample_Controllers.fs" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="UseCases\RunSql.fs" />

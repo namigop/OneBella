@@ -98,13 +98,6 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
     let runSql (sql: String) token =
         let uc = RunSql.create querySw sql db token
         RunSql.run uc
-        // let liteDb = db ()
-        // if liteDb = null then
-        //     failwith "Database is disconnected"
-        //
-        // use reader = exec (db ()) sql
-        // reader |> readResult token
-
 
     let stopCommand =
         let run () = //TODO.How to cancel a long running litedb query?

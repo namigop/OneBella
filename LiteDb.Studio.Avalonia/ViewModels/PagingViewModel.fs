@@ -27,6 +27,8 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
             let pageStart,pageEnd = pages[pageNumber]
             for i in pageStart..pageEnd do
                displaySource.Add tempSource.[i]
+        if displaySource.Count = 1 then
+            displaySource.[0].IsExpanded <-true
 
     let startPageCommand =
         let run () =

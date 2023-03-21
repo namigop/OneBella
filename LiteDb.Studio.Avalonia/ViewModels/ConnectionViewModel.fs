@@ -9,7 +9,6 @@ open OneBella.Core
 open OneBella.Models
 open ReactiveUI
 open OneBella.Models.Utils
-open OneBella.ConnectionSettings
 
 type ConnectionViewModel(savedConnections: ConnParamType array)  as this =
     inherit ViewModelBase()

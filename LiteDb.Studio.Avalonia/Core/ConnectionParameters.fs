@@ -2,7 +2,6 @@ namespace OneBella.Core
 
 open LiteDB
 open System
-open OneBella.ConnectionSettings
 
 type ConnParamType() =
 
