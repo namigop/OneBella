@@ -30,6 +30,7 @@
     <ItemGroup>
         <Compile Include="Core\ConnectionParameters.fs" />
         <Compile Include="Core\DbUtils.fs" />
+        <Compile Include="Core\BVal.fs" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="UseCases\RunSql.fs" />
@@ -48,7 +49,6 @@
         </None>
         <Content Include="Resources\ldb.ico" />
         <None Remove=".gitignore" />
-        <Compile Include="Models\SqlRun.fs" />
         <Compile Include="ViewModels\ViewModelBase.fs" />
         <Compile Include="ViewModels\BsonItem.fs" />
         <Compile Include="ViewModels\DbAction.fs" />

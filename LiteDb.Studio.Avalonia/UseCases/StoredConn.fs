@@ -22,7 +22,7 @@ let save  (settings:ConnParamType) (req:T) =
     c.Upsert(settings) |> ignore
     ()
 
-let deleteById id (req:T) =
+let deleteById (id:int) (req:T) =
     let c = req.Db().GetCollection<ConnParamType>()
     let _ = c.EnsureIndex(fun r -> r.Id)
     c.Delete id |> ignore

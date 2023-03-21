@@ -2,17 +2,14 @@ namespace OneBella.ViewModels
 
 open System
 open System.Collections.ObjectModel
-open System.IO
-open System.Threading.Tasks
 open LiteDB
 open OneBella
 open OneBella.Core
-open OneBella.Models
 open OneBella.UseCases
 open ReactiveUI
 open OneBella.Models.Utils
 
-type ConnectionItem(id, cs:ConnectionString, parent:ObservableCollection<ConnectionItem>) as this=
+type ConnectionItem(id, cs: ConnectionString, parent: ObservableCollection<ConnectionItem>) as this =
     inherit ViewModelBase()
 
     let mutable canDelete = true
@@ -38,12 +35,12 @@ type ConnectionItem(id, cs:ConnectionString, parent:ObservableCollection<Connect
             ""
 
     let deleteConnectionCommand =
-        let run() =
-            if (id > 0 ) then
-                StoredConnUseCase.deleteById id {Db = Repo.getDb}
+        let run () =
+            if (id > 0) then
+                StoredConnUseCase.deleteById id { Db = Repo.getDb }
                 parent.Remove(this) |> ignore
 
-        ReactiveCommand.Create(run )
+        ReactiveCommand.Create(run)
 
 
     member x.DeleteConnectionCommand = deleteConnectionCommand
@@ -62,11 +59,10 @@ type ConnectionItem(id, cs:ConnectionString, parent:ObservableCollection<Connect
 
     member x.DbFile
         with get () = dbFile
-        and set v =
-            x.RaiseAndSetIfChanged(&dbFile, v) |> ignore
+        and set v = x.RaiseAndSetIfChanged(&dbFile, v) |> ignore
 
     member x.CanDelete
-        with get() = canDelete
+        with get () = canDelete
         and set v = x.RaiseAndSetIfChanged(&canDelete, v) |> ignore
 
     member x.Password
@@ -93,15 +89,19 @@ type ConnectionItem(id, cs:ConnectionString, parent:ObservableCollection<Connect
         with get () = isUpgradingFromV4
         and set v = x.RaiseAndSetIfChanged(&isUpgradingFromV4, v) |> ignore
 
-    member x.GetParameters() : ConnParamType=
+    member x.GetParameters() : ConnParamType =
         let collation =
-            if not <| String.IsNullOrWhiteSpace(selectedCulture) && not <| String.IsNullOrWhiteSpace(selectedCompareOption) then
+            if
+                not <| String.IsNullOrWhiteSpace(selectedCulture)
+                && not <| String.IsNullOrWhiteSpace(selectedCompareOption)
+            then
                 $"{selectedCulture}/{selectedCompareOption}"
             elif not <| String.IsNullOrWhiteSpace(selectedCulture) then
                 selectedCulture
             else
                 ""
-        let c= ConnParamType()
+
+        let c = ConnParamType()
         c.Id <- id
         c.DbFile <- x.DbFile
         c.Password <- x.Password

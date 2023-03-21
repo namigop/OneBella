@@ -5,7 +5,6 @@ open System.Text
 open System.Threading
 open System.Threading.Tasks
 open LiteDB
-open System
 open System.Collections.Generic
 
 let exec (db: LiteDatabase) sql =

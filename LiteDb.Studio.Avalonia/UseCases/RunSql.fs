@@ -3,6 +3,7 @@ open System
 open System.Diagnostics
 open System.Threading
 open LiteDB
+open OneBella.Core
 open OneBella.Core.Rop
 open OneBella.Core.DbUtils
 
@@ -23,7 +24,11 @@ let run (req: T) =
         let db = req.Db()
         req.Stopwatch.Restart()
         use reader = exec db req.Query
-        let bsonValues = reader |> readResult req.Token |> Seq.toArray
+        let bsonValues =
+            reader
+            |> readResult req.Token
+            |> Seq.map BVal.create
+            |> Seq.toArray
         req.Stopwatch.Stop()
         bsonValues
     run go

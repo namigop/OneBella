@@ -1,56 +1,60 @@
 ﻿namespace OneBella.ViewModels
 
-open System
 open System.Collections.ObjectModel
 open System.IO
 open LiteDB
 open OneBella.Core
-open OneBella.Models
 open OneBella.Core.DbUtils
 open OneBella.Models.Utils
 open ReactiveUI
 
-type MainWindowViewModel()  as this=
+type MainWindowViewModel() as this =
     inherit ViewModelBase()
 
     let scriptTabs = ObservableCollection<ScriptViewModel>()
     let mutable db = Unchecked.defaultof<LiteDatabase>
     let mutable selectedTab = Unchecked.defaultof<ScriptViewModel>
 
-    let openNewTab getLiteDb dbFile tableName=
-       let scriptName = scriptTabs |> Seq.map (fun c -> c.Header)  |>getScriptName
-       let tab = new ScriptViewModel(getLiteDb, dbFile, scriptName)
-       tab.Query <- getDefaultSql tableName
-       scriptTabs.Add(tab)
-       this.SelectedTab <-tab
+    let openNewTab getLiteDb dbFile tableName =
+        let scriptName = scriptTabs |> Seq.map (fun c -> c.Header) |> getScriptName
+        let tab = new ScriptViewModel(getLiteDb, dbFile, scriptName)
+        tab.Query <- getDefaultSql tableName
+        scriptTabs.Add(tab)
+        this.SelectedTab <- tab
 
 
     let createTableItem getLiteDb dbFile tableName =
         let temp = DbItem(Title = tableName, IsCollection = true)
-        let newTabAction = DbAction( (fun() -> openNewTab getLiteDb dbFile tableName), Header="open new tab")
+
+        let newTabAction =
+            DbAction((fun () -> openNewTab getLiteDb dbFile tableName), Header = "open new tab")
+
         temp.ContextMenu.Add(newTabAction)
 
         temp
+
     let openNewTabCommand =
-        let run() =
-            let root :DbItem = this.DbItems |> Seq.head
+        let run () =
+            let root: DbItem = this.DbItems |> Seq.head
             let f = root :?> DbFileItem
             openNewTab (fun () -> f.LiteDb) f.ConnectionString.Filename "<Todo>"
+
         ReactiveCommand.Create(run)
 
     member x.OpenNewTabCommand = openNewTabCommand
     member val DbItems = ObservableCollection<DbItem>()
-    member x.Tabs with get() = scriptTabs
+    member x.Tabs = scriptTabs
+
     member x.SelectedTab
-        with get() = selectedTab
+        with get () = selectedTab
         and set v = x.RaiseAndSetIfChanged(&selectedTab, v) |> ignore
 
 
     member x.Connect(con: ConnParamType) =
         let dbFile = con.DbFile
         let conString = ConnectionParameters.buildConString con
-        
-        let liteDb =  getDb conString
+
+        let liteDb = getDb conString
 
         let name = Path.GetFileName dbFile
         let root = DbFileItem(liteDb, conString, Title = name, IsExpanded = true)
@@ -65,6 +69,7 @@ type MainWindowViewModel()  as this=
         |> Seq.iter (fun i -> system.Children.Add i)
 
         let collections = getCollectionNames liteDb
+
         collections
         |> Seq.map (fun name -> createTableItem getLiteDb dbFile name)
         |> Seq.iter (fun item -> root.Children.Add item)
@@ -72,7 +77,8 @@ type MainWindowViewModel()  as this=
         if (Seq.length collections) > 0 then
             openNewTab getLiteDb dbFile (Seq.head collections)
         else
-             openNewTab getLiteDb dbFile (Seq.head system.Children).Title
+            openNewTab getLiteDb dbFile (Seq.head system.Children).Title
+
         x.DbItems.Add root
         x.SelectedTab <- scriptTabs[0]
         db <- liteDb

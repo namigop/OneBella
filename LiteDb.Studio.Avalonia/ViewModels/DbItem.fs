@@ -1,6 +1,6 @@
 namespace OneBella.ViewModels
+
 open System.Collections.ObjectModel
-open LiteDB
 open ReactiveUI
 
 type DbItem() =
@@ -12,21 +12,24 @@ type DbItem() =
     let mutable isExpanded = false
     let mutable isCollection = false
 
-    member x.Children with get() = children
+    member x.Children = children
 
-    member x.ContextMenu with get() = contextMenu
+    member x.ContextMenu = contextMenu
+
     member x.Title
-        with get() = title
-        and set v =  x.RaiseAndSetIfChanged(&title, v) |> ignore
+        with get () = title
+        and set v = x.RaiseAndSetIfChanged(&title, v) |> ignore
+
     member x.IsExpanded
-        with get() = isExpanded
-        and set v =  x.RaiseAndSetIfChanged(&isExpanded, v) |> ignore
+        with get () = isExpanded
+        and set v = x.RaiseAndSetIfChanged(&isExpanded, v) |> ignore
+
     member x.IsCollection
-        with get() = isCollection
-        and set v =  x.RaiseAndSetIfChanged(&isCollection, v) |> ignore
+        with get () = isCollection
+        and set v = x.RaiseAndSetIfChanged(&isCollection, v) |> ignore
 
-    abstract IsConnected : bool
-    default x.IsConnected with get() = true
+    abstract IsConnected: bool
+    default x.IsConnected = true
 
-    abstract Disconnect : unit -> unit
+    abstract Disconnect: unit -> unit
     default x.Disconnect() = ()
