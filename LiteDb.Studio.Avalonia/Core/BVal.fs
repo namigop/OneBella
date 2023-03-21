@@ -139,27 +139,27 @@ module BVal =
           Raw = bVal }
 
     let createBInt (bVal: BsonValue) : BInt =
-        { Type = "bool"
+        { Type = "int"
           Value = bVal.AsInt32
           Raw = bVal }
 
     let createBLong (bVal: BsonValue) : BLong =
-        { Type = "bool"
+        { Type = "long"
           Value = bVal.AsInt64
           Raw = bVal }
 
     let createBDouble (bVal: BsonValue) : BDouble =
-        { Type = "bool"
+        { Type = "double"
           Value = bVal.AsDouble
           Raw = bVal }
 
     let createBString (bVal: BsonValue) : BString =
-        { Type = "bool"
+        { Type = "string"
           Value = bVal.AsString
           Raw = bVal }
 
     let createBDateTime (bVal: BsonValue) : BDateTime =
-        { Type = "bool"
+        { Type = "dateTime"
           Value = bVal.AsDateTime
           Raw = bVal }
 
