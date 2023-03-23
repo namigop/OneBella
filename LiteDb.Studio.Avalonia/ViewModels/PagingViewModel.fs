@@ -24,6 +24,7 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
 
     let showPage pageNumber =
         if (pages.ContainsKey pageNumber) then
+            currentPage <- pageNumber
             displaySource.Clear()
             let pageStart, pageEnd = pages[pageNumber]
 
@@ -86,6 +87,10 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
     member x.StartPageCommand = startPageCommand
     member x.BackPageCommand = backPageCommand
     member x.NextPageCommand = nextPageCommand
+
+    member x.GetCurrentPageBoundaries() =
+         let pageStart, pageEnd = pages[currentPage]
+         (pageStart, pageEnd)
 
     member x.PageSize
         with get () = pageSize

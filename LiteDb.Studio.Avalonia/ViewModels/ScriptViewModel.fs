@@ -26,7 +26,7 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
     let mutable resultDisplayTabIndex = 0
     let mutable isBusy = false
     let logSb = StringBuilder()
-    let mutable json = ""
+
     let mutable query = "select * from DocRuleDao"
 
     let result = ObservableCollection<BsonItem>()
@@ -73,7 +73,7 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         querySw.Restart()
         queryTimer.Start()
         this.IsBusy <- true
-        json <- ""
+
         logSb.Clear() |> ignore
         paging.RunInfo <- ""
         result.Clear()
@@ -166,18 +166,17 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         ReactiveCommand.Create(fun () -> ignore (Task.Run run))
 
     let getQueryJson () =
-        if (String.IsNullOrEmpty json) then
-            if paging.DisplaySource.Count = 1 then
-                json <- result.[0].AsJson()
-            elif (paging.DisplaySource.Count > 1) then
-                seq { 1 .. paging.DisplaySource.Count }
-                |> Seq.zip paging.DisplaySource
-                |> Seq.fold (fun (acc: StringBuilder) (b, i) -> acc.AppendLine($"// ({i})").AppendLine(b.AsJson())) (StringBuilder())
-                |> fun sb -> json <- sb.ToString()
-            else
-                json <- ""
+        if paging.DisplaySource.Count = 1 then
+            paging.DisplaySource[ 0 ].AsJson()
+        elif (paging.DisplaySource.Count > 1) then
+            let pageStart, pageEnd = paging.GetCurrentPageBoundaries()
 
-        json
+            seq { pageStart..pageEnd }
+            |> Seq.zip paging.DisplaySource
+            |> Seq.fold (fun (acc: StringBuilder) (b, i) -> acc.AppendLine($"// ({i})").AppendLine(b.AsJson())) (StringBuilder())
+            |> fun sb ->  sb.ToString()
+        else
+             ""
 
     let getTextDisplay () =
         if result.Count > 0 then
