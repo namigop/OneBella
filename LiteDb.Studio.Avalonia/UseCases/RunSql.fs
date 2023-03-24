@@ -1,6 +1,8 @@
 module OneBella.UseCases.RunSql
 open System
 open System.Diagnostics
+open System.IO
+open System.Text
 open System.Threading
 open LiteDB
 open OneBella.Core
@@ -19,11 +21,24 @@ let create sw query db token =
       Db = db
       Token = token }
 
+let removeComments sql =
+    use reader = new StringReader(sql)
+    let sb = StringBuilder()
+    let rec read() =
+        match reader.ReadLine() with
+        | null -> sb
+        | s when s.TrimStart().StartsWith("--") -> read()
+        | a ->
+            sb.AppendLine(a)
+            read()
+
+    read().ToString()
+
 let run (req: T) =
     let go () =
         let db = req.Db()
         req.Stopwatch.Restart()
-        use reader = exec db req.Query
+        use reader =  req.Query |> removeComments |>  exec db
         let bsonValues =
             reader
             |> readResult req.Token

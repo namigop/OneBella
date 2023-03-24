@@ -68,34 +68,34 @@ type BDateTime =
 
 type BValType =
     | Document of BDoc
-    | Array of BArray
-    | Bytes of BBytes
-    | Bool of BBool
-    | Decimal of BDecimal
-    | Double of BDouble
-    | Guid of BGuid
-    | Int of BInt
-    | Long of BLong
-    | String of BString
+    | Array    of BArray
+    | Bytes    of BBytes
+    | Bool     of BBool
+    | Decimal  of BDecimal
+    | Double   of BDouble
+    | Guid     of BGuid
+    | Int      of BInt
+    | Long     of BLong
+    | String   of BString
     | DateTime of BDateTime
-    | Nil of BNull
+    | Nil      of BNull
 
 module BVal =
 
     let getRawValue (bValType: BValType) =
         match bValType with
         | Document d -> d.Raw
-        | Array d -> d.Raw
-        | Bytes d -> d.Raw
-        | Bool d -> d.Raw
-        | Decimal d -> d.Raw
-        | Double d -> d.Raw
-        | Guid d -> d.Raw
-        | Int d -> d.Raw
-        | Long d -> d.Raw
-        | String d -> d.Raw
+        | Array d    -> d.Raw
+        | Bytes d    -> d.Raw
+        | Bool d     -> d.Raw
+        | Decimal d  -> d.Raw
+        | Double d   -> d.Raw
+        | Guid d     -> d.Raw
+        | Int d      -> d.Raw
+        | Long d     -> d.Raw
+        | String d   -> d.Raw
         | DateTime d -> d.Raw
-        | Nil d -> d.Raw
+        | Nil d      -> d.Raw
 
 
 
