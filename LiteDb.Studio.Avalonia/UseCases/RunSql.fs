@@ -29,7 +29,7 @@ let removeComments sql =
         | null -> sb
         | s when s.TrimStart().StartsWith("--") -> read()
         | a ->
-            sb.AppendLine(a)
+            sb.AppendLine(a) |> ignore
             read()
 
     read().ToString()
@@ -43,7 +43,7 @@ let run (req: T) =
             reader
             |> readResult req.Token
             |> Seq.map BVal.create
-            |> Seq.toArray
+            //|> Seq.toArray
         req.Stopwatch.Stop()
         bsonValues
     run go

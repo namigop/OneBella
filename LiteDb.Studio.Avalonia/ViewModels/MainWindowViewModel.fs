@@ -12,7 +12,6 @@ type MainWindowViewModel() as this =
     inherit ViewModelBase()
 
     let scriptTabs = ObservableCollection<ScriptViewModel>()
-    let mutable db = Unchecked.defaultof<LiteDatabase>
     let mutable selectedTab = Unchecked.defaultof<ScriptViewModel>
 
     let openNewTab getLiteDb dbFile tableName =
@@ -81,4 +80,3 @@ type MainWindowViewModel() as this =
 
         x.DbItems.Add root
         x.SelectedTab <- scriptTabs[0]
-        db <- liteDb

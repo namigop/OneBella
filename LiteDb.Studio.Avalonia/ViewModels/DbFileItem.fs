@@ -1,6 +1,9 @@
 namespace OneBella.ViewModels
 
+open System.Collections.Concurrent
+open System.Reflection
 open LiteDB
+open OneBella.Core
 open ReactiveUI
 
 
@@ -10,13 +13,15 @@ type DbFileItem(db: LiteDatabase, conString: ConnectionString) as this =
 
     let disconnect () =
         if not (liteDb = null) then
-            liteDb.Dispose()
+            liteDb.Checkpoint()
+            DbUtils.dispose_hack liteDb
             liteDb <- null
             this.RaisePropertyChanged(nameof this.IsConnected)
 
     let connect () =
         if (liteDb = null) then
             liteDb <- new LiteDatabase(conString)
+
             this.RaisePropertyChanged(nameof this.IsConnected)
 
     do
@@ -25,8 +30,7 @@ type DbFileItem(db: LiteDatabase, conString: ConnectionString) as this =
         this.ContextMenu.Add connect
         this.ContextMenu.Add disconnect
 
-    member x.LiteDb = liteDb
+    member x.LiteDb with get() = liteDb
     override x.IsConnected = not (liteDb = null)
-
-    override x.Disconnect() = liteDb.Dispose()
+    override x.Disconnect() = disconnect()
     member x.ConnectionString = conString

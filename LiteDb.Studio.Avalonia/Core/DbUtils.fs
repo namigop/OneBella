@@ -1,6 +1,7 @@
 module OneBella.Core.DbUtils
 
 open System.IO
+open System.Reflection
 open System.Text
 open System.Threading
 open System.Threading.Tasks
@@ -54,3 +55,40 @@ let getSystemTables (db: LiteDatabase) =
         .ToDocuments()
 
 let getCollectionNames (db: LiteDatabase) = db.GetCollectionNames() |> Seq.sort
+
+let dispose_hack (liteDb: LiteDatabase) =
+    //this is a hack to clear the MemoryCache.  We do this only after calling
+    //liteDb.Dispose because we are then sure that instance will no longer be used.
+    //
+    //We are looking to do the following using reflection
+    //  1. Call Clear() on LiteDb.LiteEngine.DiskService.MemoryCache
+    //  2. Call Clear() on LiteDb.LiteEngine.DiskService.MemoryCache._free //A ConcurrentQueue<T>
+    try
+        liteDb.Dispose()
+
+        liteDb
+            .GetType()
+            .GetField("_engine", BindingFlags.Instance ||| BindingFlags.NonPublic)
+            .GetValue(liteDb)
+        |> fun engineVal ->
+            engineVal
+                .GetType()
+                .GetField("_disk", BindingFlags.Instance ||| BindingFlags.NonPublic)
+                .GetValue(engineVal)
+        |> fun dsVal ->
+            dsVal
+                .GetType()
+                .GetProperty("Cache").GetValue(dsVal)
+        |> fun cacheVal ->
+            let clear = cacheVal.GetType().GetMethod("Clear")
+            clear.Invoke(cacheVal, null) |> ignore
+
+            cacheVal
+                .GetType()
+                .GetField("_free", BindingFlags.Instance ||| BindingFlags.NonPublic)
+                .GetValue(cacheVal)
+        |> fun freeVal ->
+            let clear = freeVal.GetType().GetMethod("Clear")
+            clear.Invoke(freeVal, null) |> ignore
+    with exc ->
+        ()
