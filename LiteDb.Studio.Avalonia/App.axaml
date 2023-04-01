@@ -3,9 +3,7 @@
              xmlns:local="using:OneBella"
              Name="OneBella"
              x:Class="OneBella.App">
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
+
     <NativeMenu.Menu>
         <NativeMenu>
             <NativeMenuItem Header="About OneBella"  />

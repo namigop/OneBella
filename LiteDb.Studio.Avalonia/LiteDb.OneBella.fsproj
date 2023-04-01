@@ -69,7 +69,6 @@
         <Compile Include="Views\SqlTextEditor.axaml.fs" />
         <Compile Include="Views\JsonTextEditor.axaml.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
-        <Compile Include="ViewLocator.fs" />
         <Compile Include="App.axaml.fs" />
         <Compile Include="Program.fs" />
         <Content Include="..\README.md">
