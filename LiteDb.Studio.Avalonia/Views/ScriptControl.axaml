@@ -26,7 +26,7 @@
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabItem Header="Grid">
-                    <TreeDataGrid Source="{Binding Source}">
+                    <TreeDataGrid Source="{Binding Source}" x:Name="TreeDataGridResults" >
                         <TreeDataGrid.Resources>
                             <vm:ValueTemplateSelector x:Key="BsonItemValueSelector">
                                 <DataTemplate x:Key="JsonValue" x:DataType="vm:BsonItem">
@@ -40,15 +40,90 @@
                                 </DataTemplate>
                                 <DataTemplate x:Key="BoolValue" x:DataType="vm:BsonItem">
                                     <!-- <CheckBox IsChecked="{Binding Value}" IsHitTestVisible="False" VerticalAlignment="Center"></CheckBox> -->
-                                    <ToggleSwitch IsChecked="{Binding Value}" IsHitTestVisible="False"  VerticalAlignment="Center"
-                                                  OffContent="False" OnContent="True"
-                                                  ></ToggleSwitch>
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <ToggleSwitch IsChecked="{Binding Value}" IsHitTestVisible="False" VerticalAlignment="Center"
+                                                      OffContent="False" OnContent="True" IsVisible="{Binding !CanShowEditor}">
+                                        </ToggleSwitch>
+
+                                        <StackPanel IsVisible="{Binding CanShowEditor}" Orientation="Horizontal">
+                                            <ToggleSwitch IsChecked="{Binding Value}" IsHitTestVisible="True" VerticalAlignment="Center"
+                                                          OffContent="False" OnContent="True">
+                                            </ToggleSwitch>
+                                            <TextBlock Text="click to edit" Foreground="Gray" VerticalAlignment="Center" FontSize="10" FontStyle="Italic" Margin="10 0 0 0"></TextBlock>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" IsVisible="{Binding IsEditable}">
+                                            <Button Background="Transparent" Command="{Binding EditCommand}">
+                                                <Grid>
+                                                    <Viewbox Height="18" Width="18" IsVisible="{Binding !CanCommitChange}">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{StaticResource LdbTextColor}"
+                                                                  Data="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <Viewbox Height="18" Width="18" IsVisible="{Binding CanCommitChange}">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="LightGreen"
+                                                                  Data="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Grid>
+
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
                                 </DataTemplate>
                                 <DataTemplate x:Key="StringValue" x:DataType="vm:BsonItem">
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding Value}" Foreground="#9EC0E3"></TextBlock>
+                                    <Grid ColumnDefinitions="*, Auto">
+
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding Value}" Foreground="#9EC0E3" IsVisible="{Binding !CanShowEditor}"></TextBlock>
+                                        <TextBox VerticalAlignment="Center" Text="{Binding Value}" Foreground="#9EC0E3" IsVisible="{Binding CanShowEditor}"></TextBox>
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" IsVisible="{Binding IsEditable}">
+                                            <Button Background="Transparent" Command="{Binding EditCommand}">
+                                                <Grid>
+                                                    <Viewbox Height="18" Width="18" IsVisible="{Binding !CanCommitChange}">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{StaticResource LdbTextColor}"
+                                                                  Data="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <Viewbox Height="18" Width="18" IsVisible="{Binding CanCommitChange}">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="LightGreen"
+                                                                  Data="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Grid>
+
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
                                 </DataTemplate>
                                 <DataTemplate x:Key="NumberValue" x:DataType="vm:BsonItem">
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding Value}" Foreground="#638CB3"></TextBlock>
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding Value}" Foreground="#638CB3" IsVisible="{Binding !CanShowEditor}"></TextBlock>
+                                        <NumericUpDown VerticalAlignment="Center" Value="{Binding Value}" Foreground="#638CB3" IsVisible="{Binding CanShowEditor}"></NumericUpDown>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" IsVisible="{Binding IsEditable}">
+                                            <Button Background="Transparent" Command="{Binding EditCommand}">
+                                                <Grid>
+                                                    <Viewbox Height="18" Width="18" IsVisible="{Binding !CanCommitChange}">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{StaticResource LdbTextColor}"
+                                                                  Data="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <Viewbox Height="18" Width="18" IsVisible="{Binding CanCommitChange}">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="LightGreen"
+                                                                  Data="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Grid>
+
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
                                 </DataTemplate>
                                 <DataTemplate x:Key="OthersValue" x:DataType="vm:BsonItem">
                                     <TextBlock VerticalAlignment="Center" Text="{Binding Value}"></TextBlock>
@@ -87,7 +162,7 @@
             </TabControl>
 
             <!-- Progress Bar In the middle -->
-            <Border Padding="4" CornerRadius="4" Background="{StaticResource LdbWindowBackground}" IsVisible="{Binding IsBusy}"  VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border Padding="4" CornerRadius="4" Background="{StaticResource LdbWindowBackground}" IsVisible="{Binding IsBusy}" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Grid RowDefinitions="Auto,Auto">
                     <TextBlock Text="Running query.."></TextBlock>
                     <ProgressBar Grid.Row="1" IsIndeterminate="True"

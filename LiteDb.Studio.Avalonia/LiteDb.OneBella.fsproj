@@ -34,6 +34,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="UseCases\RunSql.fs" />
+        <Compile Include="UseCases\UpdateField.fs" />
         <Compile Include="UseCases\StoredConn.fs" />
     </ItemGroup>
 

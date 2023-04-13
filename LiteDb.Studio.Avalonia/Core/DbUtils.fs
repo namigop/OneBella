@@ -8,9 +8,14 @@ open System.Threading.Tasks
 open LiteDB
 open System.Collections.Generic
 
-let exec (db: LiteDatabase) sql =
+let execWithArg (db: LiteDatabase) sql arg=
     use reader = new StringReader(sql)
-    db.Execute(reader, BsonDocument())
+    db.Execute(reader, arg)
+
+let exec (db: LiteDatabase) sql =
+    execWithArg db sql (BsonDocument())
+    //use reader = new StringReader(sql)
+    //db.Execute(reader, BsonDocument())
 
 let checkpoint (db: LiteDatabase) =
     async { do! db.Checkpoint |> Task.Run |> Async.AwaitTask }

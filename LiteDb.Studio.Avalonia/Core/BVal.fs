@@ -82,6 +82,7 @@ type BValType =
 
 module BVal =
 
+
     let getRawValue (bValType: BValType) =
         match bValType with
         | Document d -> d.Raw
@@ -96,9 +97,20 @@ module BVal =
         | String d   -> d.Raw
         | DateTime d -> d.Raw
         | Nil d      -> d.Raw
+    let isObjectId (bValType: BValType) = bValType |> getRawValue |> fun d -> d.IsObjectId
 
-
-
+    let findObjectId (bValType: BValType) =
+        match bValType with
+        | Document d ->
+            d.Value
+            |> Seq.tryFind (fun kv ->
+                let bb =kv.Key = "_id"
+                bb )
+            |> fun b ->
+                match b with
+                    | Some (v) -> Some v.Value
+                    | None -> None
+        | _ -> None
 
     let createBDoc (bVal: BsonValue) : BDoc =
         { Type = "document"
@@ -164,6 +176,18 @@ module BVal =
           Raw = bVal }
 
     let createBNull (bVal: BsonValue) : BNull = { Type = ""; Value = bVal; Raw = bVal }
+
+    let createBsonValue (typ:BValType) (target:string) =
+         match typ with
+            | String   _ -> BsonValue(target)
+            | DateTime _ -> target |> System.DateTime.Parse |> BsonValue
+            | Bool     _ -> target |> Convert.ToBoolean |> BsonValue
+            | Decimal  _ -> target |> Convert.ToDecimal |> BsonValue
+            | Double   _ -> target |> Convert.ToDouble |> BsonValue
+            | Long     _ -> target |> Convert.ToInt64 |> BsonValue
+            | Int      _ -> target |> Convert.ToInt32 |> BsonValue
+            | Guid     _ -> target |>  Guid.Parse |> BsonValue
+            | _ -> JsonSerializer.Deserialize target
 
     let create (bVal: BsonValue) : BValType =
         if bVal.IsDocument then

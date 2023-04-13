@@ -85,8 +85,9 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
 
         Dispatcher.UIThread.Post(fun () ->
             if not (bsonValues = null) then
+                let tableName = RunSql.findTableName this.Query
                 for i in bsonValues do
-                    result.Add(BsonItem("result", i, -1, IsExpanded = true))
+                    result.Add(BsonItem("result", i, -1, None, tableName, db, IsExpanded = true))
 
                 paging.CalculatePages(querySw.Elapsed)
 
@@ -120,9 +121,9 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         |> log (fun _ -> info $"Executing {sql}") err
         |> map (fun _ -> runSql sql cs.Token)
         |> log (fun b -> info $"Done {sql}") err
-        |> tryMapErr (fun j -> ok Array.empty)
+        |> tryMapErr (fun j -> Seq.empty)
         |> log (fun _ -> info $"Showing query results") err
-        |> finish (fun bson -> afterRunSql bson.Value)
+        |> finish (fun bson -> afterRunSql bson)
 
 
     let runSqlCommand =
