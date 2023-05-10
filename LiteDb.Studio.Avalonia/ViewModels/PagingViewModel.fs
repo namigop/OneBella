@@ -78,7 +78,7 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
 
             if hasSingleDocResult && documentHasSingleArrayChild then
                 let docs = queryResult[0].Children |> Seq.head |> (fun f -> f.Children)
-                true, docs
+                (Seq.length docs) > 0 , docs
             else
                 false, Seq.empty
 
@@ -104,7 +104,6 @@ type PagingViewModel(source: ObservableCollection<BsonItem>) =
     member x.CalculatePages(elapsed: TimeSpan) =
         pages.Clear()
         displaySource.Clear()
-        tempSource <- source
 
         let ok, flattened = tryFlatten source
 

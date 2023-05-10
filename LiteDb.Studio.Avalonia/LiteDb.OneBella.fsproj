@@ -11,11 +11,11 @@
     <PropertyGroup>
         <CFBundleName>OneBella</CFBundleName> <!-- Also defines .app file name -->
         <CFBundleDisplayName>OneBella</CFBundleDisplayName>
-        <CFBundleIdentifier>com.onebells</CFBundleIdentifier>
+        <CFBundleIdentifier>com.fint.onebella</CFBundleIdentifier>
         <CFBundleVersion>1.0.0</CFBundleVersion>
         <CFBundlePackageType>APPL</CFBundlePackageType>
         <CFBundleShortVersionString>OneBella 1.0+</CFBundleShortVersionString>
-        <CFBundleSignature>com.open.source.onebells</CFBundleSignature>
+        <CFBundleSignature>com.fint.onebella</CFBundleSignature>
         <CFBundleExecutable>OneBella</CFBundleExecutable>
         <CFBundleIconFile>Resources/ldb.icns</CFBundleIconFile>
         <ApplicationIcon>Resources\ldb.ico</ApplicationIcon> <!-- Will be copied from output directory -->
@@ -41,6 +41,7 @@
     <ItemGroup>
         <Compile Include="Repo\Repo.fs" />
         <AvaloniaResource Include="Assets\**" />
+        <Content Include="OneBella.entitlements" />
         <EmbeddedResource Include="Resources\json.xshd" />
         <EmbeddedResource Include="Resources\sql.xshd" />
         <AvaloniaResource Include="Resources\Styles.xaml" />
