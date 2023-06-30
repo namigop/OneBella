@@ -3,6 +3,12 @@ namespace OneBella.Core
 open System
 open LiteDB
 
+
+type BObjectId =
+    { Type: string
+      Value: ObjectId
+      Raw: BsonValue }
+
 type BDoc =
     { Type: string
       Count: int
@@ -79,6 +85,7 @@ type BValType =
     | String   of BString
     | DateTime of BDateTime
     | Nil      of BNull
+    | ObjectId of BObjectId
 
 module BVal =
 
@@ -97,7 +104,9 @@ module BVal =
         | String d   -> d.Raw
         | DateTime d -> d.Raw
         | Nil d      -> d.Raw
-    let isObjectId (bValType: BValType) = bValType |> getRawValue |> fun d -> d.IsObjectId
+        | ObjectId d -> d.Raw
+    let isObjectId (bValType: BValType) =
+        bValType |> getRawValue |> fun d -> d.IsObjectId
 
     let findObjectId (bValType: BValType) =
         match bValType with
@@ -128,6 +137,10 @@ module BVal =
         { Type = "bytes"
           SizeKB = Convert.ToDouble(bVal.AsBinary.LongLength) / 1024.0
           Value = bVal.AsBinary
+          Raw = bVal }
+    let createBObjectId (bVal: BsonValue) : BObjectId=
+        { Type = "objectId"
+          Value = bVal.AsObjectId
           Raw = bVal }
 
     let createBBool (bVal: BsonValue) : BBool =
@@ -215,5 +228,7 @@ module BVal =
             bVal |> createBString |> String
         elif bVal.IsDateTime then
             bVal |> createBDateTime |> DateTime
+        elif bVal.IsObjectId then
+            bVal |> createBObjectId |> ObjectId
         else
             failwith "unsupported type"
