@@ -28,6 +28,7 @@ type BsonItem(name: string, bVal: BValType, index: int, parent: Option<BsonItem>
         | Long     d -> d.Type, $"{d.Value}"
         | String   d -> d.Type, $"{d.Value}"
         | DateTime d -> d.Type, $"{d.Value}"
+        | ObjectId d -> d.Type, $"{d.Value}"
 
     let children =
         match bVal with
