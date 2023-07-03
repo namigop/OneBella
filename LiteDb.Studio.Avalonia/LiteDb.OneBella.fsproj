@@ -12,9 +12,9 @@
         <CFBundleName>OneBella</CFBundleName> <!-- Also defines .app file name -->
         <CFBundleDisplayName>OneBella</CFBundleDisplayName>
         <CFBundleIdentifier>com.fint.onebella</CFBundleIdentifier>
-        <CFBundleVersion>1.0.0</CFBundleVersion>
+        <CFBundleVersion>1.1.0</CFBundleVersion>
         <CFBundlePackageType>APPL</CFBundlePackageType>
-        <CFBundleShortVersionString>OneBella 1.0+</CFBundleShortVersionString>
+        <CFBundleShortVersionString>OneBella 1.1+</CFBundleShortVersionString>
         <CFBundleSignature>com.fint.onebella</CFBundleSignature>
         <CFBundleExecutable>OneBella</CFBundleExecutable>
         <CFBundleIconFile>Resources/ldb.icns</CFBundleIconFile>
