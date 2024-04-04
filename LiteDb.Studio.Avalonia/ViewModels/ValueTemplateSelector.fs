@@ -15,7 +15,7 @@ type ValueTemplateSelector() =
 
     interface IDataTemplate with
         // Build the DataTemplate here
-        member x.Build(param: obj) : IControl =
+        member x.Build(param: obj) : Control =
             let item = param :?> BsonItem
 
             let key =

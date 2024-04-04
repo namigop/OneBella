@@ -16,7 +16,7 @@ type DbItemTemplateSelector() =
 
     interface IDataTemplate with
         // Build the DataTemplate here
-        member x.Build(param: obj) : IControl =
+        member x.Build(param: obj) : Control =
             let item = param :?> DbItem
             let key = if item.IsCollection then "Table" else "Database"
             x.AvailableTemplates[ key ].Build(param) // finally we look up the provided key and let the System build the DataTemplate for us

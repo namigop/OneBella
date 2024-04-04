@@ -44,7 +44,7 @@ type JsonTextEditor() as this=
            editor.SyntaxHighlighting <- HighlightingLoader.Load(reader, HighlightingManager.Instance);
 
 
-    static let  OnCoerceText (d:IAvaloniaObject) arg =
+    static let  OnCoerceText (d:AvaloniaObject) arg =
          let sender = d :?> JsonTextEditor
          let editor = sender.FindControl<TextEditor>("Editor")
          if not(arg = editor.Text)  then

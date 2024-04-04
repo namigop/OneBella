@@ -62,7 +62,10 @@
                         </CheckBox>
 
                         <DockPanel Grid.Column="1" Grid.Row="0">
-                            <ComboBox Padding="5 2 5 2" HorizontalAlignment="Stretch" Margin="5 0 5 0" Items="{Binding ConnectionItems}" SelectedItem="{Binding SelectedConnectionItem}">
+                            <ComboBox Padding="5 2 5 2" HorizontalAlignment="Stretch" Margin="5 0 5 0" 
+									  
+									   
+									  ItemsSource="{Binding ConnectionItems}" SelectedItem="{Binding SelectedConnectionItem}">
                                 <ComboBox.Styles>
                                     <Style Selector="ComboBox /template/ ContentControl#ContentPresenter > Grid > Button:nth-child(2)">
                                         <Setter Property="IsVisible" Value="False" />
@@ -97,9 +100,9 @@
                         <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding SelectedConnectionItem.Password}" PasswordChar="*" Margin="5 10 5 5"></TextBox>
                         <NumericUpDown Grid.Column="1" Grid.Row="2" Minimum="0" Margin="5" Value="{Binding SelectedConnectionItem.InitSizeInMB}"></NumericUpDown>
                         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="5">
-                            <ComboBox Items="{Binding SelectedConnectionItem.Cultures}" SelectedItem="{Binding SelectedConnectionItem.SelectedCulture}" MinWidth="80"></ComboBox>
+                            <ComboBox ItemsSource="{Binding SelectedConnectionItem.Cultures}" SelectedItem="{Binding SelectedConnectionItem.SelectedCulture}" MinWidth="80"></ComboBox>
                             <TextBlock Text="/" Margin="5"></TextBlock>
-                            <ComboBox Items="{Binding SelectedConnectionItem.CompareOptions}" SelectedItem="{Binding SelectedConnectionItem.SelectedCompareOption}" MinWidth="80"></ComboBox>
+                            <ComboBox ItemsSource="{Binding SelectedConnectionItem.CompareOptions}" SelectedItem="{Binding SelectedConnectionItem.SelectedCompareOption}" MinWidth="80"></ComboBox>
                         </StackPanel>
 
                     </Grid>

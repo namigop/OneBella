@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
         <TrimMode>copyused</TrimMode>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -12,9 +12,9 @@
         <CFBundleName>OneBella</CFBundleName> <!-- Also defines .app file name -->
         <CFBundleDisplayName>OneBella</CFBundleDisplayName>
         <CFBundleIdentifier>com.fint.onebella</CFBundleIdentifier>
-        <CFBundleVersion>1.1.0</CFBundleVersion>
+        <CFBundleVersion>1.2.0</CFBundleVersion>
         <CFBundlePackageType>APPL</CFBundlePackageType>
-        <CFBundleShortVersionString>OneBella 1.1+</CFBundleShortVersionString>
+        <CFBundleShortVersionString>OneBella 1.2+</CFBundleShortVersionString>
         <CFBundleSignature>com.fint.onebella</CFBundleSignature>
         <CFBundleExecutable>OneBella</CFBundleExecutable>
         <CFBundleIconFile>Resources/ldb.icns</CFBundleIconFile>
@@ -89,16 +89,18 @@
         <TrimmableAssembly Include="Avalonia.Themes.Default" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="0.10.18" />
-        <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.12.2" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.18" />
-        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="0.10.18.1" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
+        <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.18" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.10" />
         <PackageReference Include="DotNet.Bundle" Version="0.9.13" />
-        <PackageReference Include="LiteDB" Version="5.0.15" />
+        <PackageReference Include="LiteDB" Version="5.0.19" />
     </ItemGroup>
    
 </Project>
