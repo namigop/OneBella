@@ -21,10 +21,8 @@ type ConnectionViewModel(savedConnections: ConnParamType array) as this =
         let ok =
             not (String.IsNullOrEmpty selectedConItem2.DbFile)
             && File.Exists(selectedConItem2.DbFile)
-
         if not ok then
             this.Error <- "Please select a db file"
-
         ok
 
     do
@@ -38,7 +36,8 @@ type ConnectionViewModel(savedConnections: ConnParamType array) as this =
             |> fun c -> items.Insert(0, c)
 
             for d in items do
-                conItems.Add d
+                if (File.Exists d.DbFile) then
+                    conItems.Add d
 
             selectedConItem2 <- conItems[0]
 

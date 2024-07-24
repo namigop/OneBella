@@ -47,8 +47,9 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
                 )
             )
 
-            temp.Columns.Add(TemplateColumn<BsonItem>("value", "BsonItemValueSelector", GridLength(1, GridUnitType.Star)))
-            temp.Columns.Add(TextColumn<BsonItem, string>("type", (fun b -> b.Type)))
+            //temp.Columns.Add(TemplateColumn<BsonItem>("value", "BsonItemValueSelector", GridLength(1, GridUnitType.Star)))
+            temp.Columns.Add(TemplateColumn<BsonItem>("value", "BsonItemValueSelector", width = GridLength(4, GridUnitType.Star)))
+            temp.Columns.Add(TextColumn<BsonItem, string>("type", (fun b -> b.Type), width = GridLength(1, GridUnitType.Star)))
             temp
 
     let querySw, queryTimer =

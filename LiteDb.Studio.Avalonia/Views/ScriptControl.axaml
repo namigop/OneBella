@@ -18,14 +18,14 @@
         <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
         <Grid Grid.Row="2">
             <TabControl Grid.Row="2" Grid.Column="2" Background="{StaticResource LdbControlBackground}" SelectedIndex="{Binding ResultDisplayTabIndex}">
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
+                <TabControl.Resources>
+                    <DataTemplate x:Key="MyHeader">
                         <DockPanel>
-                            <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding}"  FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
                         </DockPanel>
                     </DataTemplate>
-                </TabControl.ItemTemplate>
-                <TabItem Header="Grid">
+                </TabControl.Resources>
+                <TabItem Header="Grid" HeaderTemplate="{StaticResource MyHeader}">
                     <TreeDataGrid Source="{Binding Source}" x:Name="TreeDataGridResults" >
                         <TreeDataGrid.Resources>
                             <vm:ValueTemplateSelector x:Key="BsonItemValueSelector">
@@ -152,11 +152,9 @@
                             </Style>
                         </TreeDataGrid.Styles>
                     </TreeDataGrid>
-
                 </TabItem>
-                <TabItem Header="Text">
+                <TabItem Header="Text" HeaderTemplate="{StaticResource MyHeader}">
                     <view:JsonTextEditor Text="{Binding QueryResultText}">
-
                     </view:JsonTextEditor>
                 </TabItem>
             </TabControl>
