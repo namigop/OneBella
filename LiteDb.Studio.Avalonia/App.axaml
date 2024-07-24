@@ -4,7 +4,6 @@
              Name="OneBella"
 			RequestedThemeVariant="Dark"
              x:Class="OneBella.App">
-
     <NativeMenu.Menu>
         <NativeMenu>
             <NativeMenuItem Header="About OneBella"  />
@@ -19,7 +18,7 @@
 
     </Application.Resources>
     <Application.Styles>
-        <FluentTheme  DensityStyle="Normal" />
+        <FluentTheme  DensityStyle="Compact" />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
 		<StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
         <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>

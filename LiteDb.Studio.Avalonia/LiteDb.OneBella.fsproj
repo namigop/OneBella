@@ -89,18 +89,18 @@
         <TrimmableAssembly Include="Avalonia.Themes.Default" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia" Version="11.1.0" />
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.1.0" />
         <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.1.0" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.10" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Themes.Simple" Version="11.1.0" />
         <PackageReference Include="DotNet.Bundle" Version="0.9.13" />
-        <PackageReference Include="LiteDB" Version="5.0.19" />
+        <PackageReference Include="LiteDB" Version="5.0.21" />
     </ItemGroup>
    
 </Project>
