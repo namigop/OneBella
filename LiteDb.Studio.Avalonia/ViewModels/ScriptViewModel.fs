@@ -122,7 +122,7 @@ type ScriptViewModel(db: unit -> LiteDatabase, dbFile: string, name: string) as 
         |> log (fun _ -> info $"Executing {sql}") err
         |> map (fun _ -> runSql sql cs.Token)
         |> log (fun b -> info $"Done {sql}") err
-        |> tryMapErr (fun j -> Seq.empty)
+        |> tryMapErr (fun j -> Array.empty)
         |> log (fun _ -> info $"Showing query results") err
         |> finish (fun bson -> afterRunSql bson)
 

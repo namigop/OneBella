@@ -71,7 +71,7 @@ let run (req: T) =
     let db = req.Db()
     req.Stopwatch.Restart()
     use reader = req.Query |> removeComments |> exec db
-    let bsonValues = reader |> readResult req.Token |> Seq.map BVal.create
+    let bsonValues = reader |> readResult req.Token |> Seq.map BVal.create |> Seq.toArray
     //|> Seq.toArray
     req.Stopwatch.Stop()
     bsonValues

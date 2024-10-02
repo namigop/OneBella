@@ -71,29 +71,29 @@ let dispose_hack (liteDb: LiteDatabase) =
     try
         liteDb.Dispose()
 
-        liteDb
-            .GetType()
-            .GetField("_engine", BindingFlags.Instance ||| BindingFlags.NonPublic)
-            .GetValue(liteDb)
-        |> fun engineVal ->
-            engineVal
-                .GetType()
-                .GetField("_disk", BindingFlags.Instance ||| BindingFlags.NonPublic)
-                .GetValue(engineVal)
-        |> fun dsVal ->
-            dsVal
-                .GetType()
-                .GetProperty("Cache").GetValue(dsVal)
-        |> fun cacheVal ->
-            let clear = cacheVal.GetType().GetMethod("Clear")
-            clear.Invoke(cacheVal, null) |> ignore
+        //liteDb
+        //    .GetType()
+        //    .GetField("_engine", BindingFlags.Instance ||| BindingFlags.NonPublic)
+        //    .GetValue(liteDb)
+        //|> fun engineVal ->
+        //    engineVal
+        //        .GetType()
+        //        .GetField("_disk", BindingFlags.Instance ||| BindingFlags.NonPublic)
+        //        .GetValue(engineVal)
+        //|> fun dsVal ->
+        //    dsVal
+        //        .GetType()
+        //        .GetProperty("Cache").GetValue(dsVal)
+        //|> fun cacheVal ->
+        //    let clear = cacheVal.GetType().GetMethod("Clear")
+        //    clear.Invoke(cacheVal, null) |> ignore
 
-            cacheVal
-                .GetType()
-                .GetField("_free", BindingFlags.Instance ||| BindingFlags.NonPublic)
-                .GetValue(cacheVal)
-        |> fun freeVal ->
-            let clear = freeVal.GetType().GetMethod("Clear")
-            clear.Invoke(freeVal, null) |> ignore
+        //    cacheVal
+        //        .GetType()
+        //        .GetField("_free", BindingFlags.Instance ||| BindingFlags.NonPublic)
+        //        .GetValue(cacheVal)
+        //|> fun freeVal ->
+        //    let clear = freeVal.GetType().GetMethod("Clear")
+        //    clear.Invoke(freeVal, null) |> ignore
     with exc ->
         ()

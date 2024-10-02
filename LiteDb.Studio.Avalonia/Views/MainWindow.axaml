@@ -8,10 +8,10 @@
         x:Class="OneBella.Views.MainWindow"
         Icon="/Assets/ldb.ico"
         Background="{StaticResource LdbWindowBackground}"
-        WindowState="Maximized"
-        TransparencyLevelHint="AcrylicBlur"
+        WindowState="Normal"
+        
         ExtendClientAreaToDecorationsHint="True"
-        Title="Light Debbie">
+        Title="OneBella">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
