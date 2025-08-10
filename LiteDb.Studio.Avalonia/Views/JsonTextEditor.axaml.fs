@@ -24,7 +24,7 @@ type JsonTextEditor() as this=
 
     do
         AvaloniaXamlLoader.Load(this)
-        this.foldingTimer <- new DispatcherTimer (Interval = TimeSpan.FromSeconds(2))
+        this.foldingTimer <- new DispatcherTimer (Interval = TimeSpan.FromSeconds(2L))
         let editor = this.FindControl<TextEditor>("Editor")
         editor.Document <- new TextDocument ( Text = "" );
         editor.TextChanged |> Event.add (fun _ -> this.Text <- editor.Text)

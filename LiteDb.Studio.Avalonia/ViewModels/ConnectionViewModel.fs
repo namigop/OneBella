@@ -39,7 +39,8 @@ type ConnectionViewModel(savedConnections: ConnParamType array) as this =
                 if (File.Exists d.DbFile) then
                     conItems.Add d
 
-            selectedConItem2 <- conItems[0]
+            if conItems.Count > 0 then
+                selectedConItem2 <- conItems[0]
 
 
     let connectCommand =
